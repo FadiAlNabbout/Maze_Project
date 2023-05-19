@@ -17,49 +17,61 @@ def generate_maze(width, height):
                 maze[y + dy // 2, x + dx // 2] = 1  # Carve the path by removing the wall
                 carve_path(next_x, next_y)
 
-    # Position the start and end points at opposite ends
-    start_x, start_y = 1, np.random.randint(1, height) * 2
-    maze[start_y, start_x] = 2  # Set the start point
+    start_x, start_y = np.random.randint(1, width) * 2, np.random.randint(1, height) * 2
+    maze[start_y, start_x] = 2
 
-    end_x, end_y = width * 2, np.random.randint(1, height) * 2
-    maze[end_y, end_x] = 3  # Set the end point
+    end_x, end_y = np.random.randint(1, width) * 2, np.random.randint(1, height) * 2
+    maze[end_y, end_x] = 3
 
     carve_path(start_x, start_y)
 
     return maze
 
 def display_maze(maze):
-    cmap = plt.cm.colors.ListedColormap(['green', 'white', 'blue', 'red'])
-    bounds = [0, 1, 2, 3, 4]
-    norm = plt.cm.colors.BoundaryNorm(bounds, cmap.N)
+    cmap = plt.cm.get_cmap('Greens')  # Colormap for colors
+    cmap.set_under('white')  # Set the color for the maze
 
-    fig, ax = plt.subplots(figsize=(8, 8))
-    ax.imshow(maze, cmap=cmap, interpolation='nearest', norm=norm)
+    fig, ax = plt.subplots(figsize=(10, 10))
+    ax.imshow(maze, cmap=cmap, interpolation='nearest')
 
-    ax.set_xticks([])
-    ax.set_yticks([])
+    # Add entry and exit points inside the maze
+    start = np.argwhere(maze == 2)
+    end = np.argwhere(maze == 3)
+    ax.scatter(start[:, 1], start[:, 0], color='blue', marker='s', s=100)
+    ax.scatter(end[:, 1], end[:, 0], color='red', marker='s', s=100)
 
     # Add header text with better placement
-    ax.text(maze.shape[1] // 2, -1, 'Maze Project', ha='center', fontsize=16, fontweight='bold')
+    ax.text(maze.shape[1] // 2, -0.8, 'Maze Project', ha='center', fontsize=20, fontweight='bold')
 
-    # Add shuffle button
-    ax_button = plt.axes([0.4, 0.02, 0.2, 0.05])
-    button = plt.Button(ax_button, 'Shuffle', color='lightblue', hovercolor='skyblue')
-
-    def shuffle_maze(event):
-        nonlocal maze
-        maze = generate_maze((maze.shape[1] - 1) // 2, (maze.shape[0] - 1) // 2)
-        ax.clear()
-        ax.imshow(maze, cmap=cmap, interpolation='nearest', norm=norm)
-        ax.set_xticks([])
-        ax.set_yticks([])
-        ax.text(maze.shape[1] // 2, -1, 'Maze Project', ha='center', fontsize=16, fontweight='bold')
-        plt.draw()
-
-    button.on_clicked(shuffle_maze)
-
+    plt.xticks([])
+    plt.yticks([])
     plt.show()
 
-# Example usage:
+def verify_path(maze):
+    start = np.argwhere(maze == 2)
+    end = np.argwhere(maze == 3)
+
+    def dfs(x, y):
+        if [x, y] in end.tolist():
+            return True
+
+        maze[y, x] = -1  # Mark current cell as visited
+
+        directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+
+        for dx, dy in directions:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < maze.shape[1] and 0 <= ny < maze.shape[0] and maze[ny, nx] in [1, 3]:
+                if dfs(nx, ny):
+                    return True
+
+        return False
+
+    return any(dfs(*point) for point in start)
+
+# Generate a maze with a valid path between the start and end points
 maze = generate_maze(10, 10)
+while not verify_path(maze):
+    maze = generate_maze(10, 10)
+
 display_maze(maze)
