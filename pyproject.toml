@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "maze-project1"
+version = "0.1.0"
+description = ""
+authors = ["Fadi Nabbout <fadinab2010@gmail.com>"]
+readme = "README.md"
+packages = [{include = "maze_project1"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pygame = "^2.1.0"
+networkx = "^2.6.3"
+matplotlib = "^3.4.3"
+stack = "*"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
