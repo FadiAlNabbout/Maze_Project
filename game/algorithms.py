@@ -30,7 +30,6 @@ def a_star(maze):
                 f_score[neighbor] = g + heuristic(neighbor, end)
                 if neighbor not in visited:
                     queue.put(neighbor)
-
     return None
 
 
@@ -91,11 +90,17 @@ def ant_colony(maze):
 
 
 def find_start(maze):
-    return tuple(np.argwhere(maze == 2)[0])
+    start_positions = np.argwhere(maze == 2)
+    if len(start_positions) == 0:
+        raise ValueError("Start position not found in the maze.")
+    return tuple(start_positions[0])
 
 
 def find_end(maze):
-    return tuple(np.argwhere(maze == 3)[0])
+    end_positions = np.argwhere(maze == 3)
+    if len(end_positions) == 0:
+        raise ValueError("End position not found in the maze.")
+    return tuple(end_positions[0])
 
 
 def get_neighbors(position, maze):
@@ -124,3 +129,19 @@ def reconstruct_path(parent, current):
         path.append(current)
     path.reverse()
     return path
+
+
+def verify_path(path, maze):
+    # Check if the path is valid (from start to end)
+    start = find_start(maze)
+    end = find_end(maze)
+    if path[0] != start or path[-1] != end:
+        return False
+
+    for i in range(len(path) - 1):
+        x1, y1 = path[i]
+        x2, y2 = path[i + 1]
+        if abs(x1 - x2) + abs(y1 - y2) != 1:
+            return False
+
+    return True

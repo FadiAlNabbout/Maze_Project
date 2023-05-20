@@ -6,6 +6,8 @@ class Adventurer:
         self.color = color
         self.marker = marker
         self.size = size
+        self.path = None
+        self.path_index = 0
 
     def move(self, dx, dy):
         new_x = self.x + dx
@@ -18,8 +20,20 @@ class Adventurer:
                 self.x = new_x
                 self.y = new_y
 
+    def update_path(self, path):
+        self.path = path
+        self.path_index = 0
+
+    def follow_path(self):
+        if self.path is not None and self.path_index < len(self.path):
+            next_x, next_y = self.path[self.path_index]
+            dx = next_x - self.x
+            dy = next_y - self.y
+            self.move(dx, dy)
+            self.path_index += 1
 
     def reset_position(self, start_x, start_y):
         self.x = start_x
         self.y = start_y
-
+        self.path = None
+        self.path_index = 0

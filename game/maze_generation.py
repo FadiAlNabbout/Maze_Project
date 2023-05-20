@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from Adventurer import Adventurer
+import algorithms
 
 game_finished = False  # Global variable to track game status
 
@@ -87,25 +88,45 @@ def display_maze(maze):
 
     def on_key(event):
         global game_finished  # Access the global variable
-        direction_mapping = {
-            'right': (1, 0),
-            'left': (-1, 0),
-            'down': (0, 1),
-            'up': (0, -1)
-        }
 
-        if (adventurer.x, adventurer.y) == (end[1], end[0]):
+        if event.key == 'a':
+            path = algorithms.a_star(maze)
+            if path:
+                path = path[1:]  # Exclude the starting position
+                for step in path:
+                    print(f"Move to {step}")
+                    adventurer.move(step[0] - adventurer.x, step[1] - adventurer.y)
+                    adventurer.follow_path()
+                    adventurer_plot.set_offsets([adventurer.x, adventurer.y])
+                    plt.draw()
+                    plt.pause(0.1)
+            else:
+                print("No valid path found.")
+        elif (adventurer.x, adventurer.y) == (end[1], end[0]):
             ax.text(maze.shape[1] // 2, maze.shape[0] // 2, 'You WIN!', ha='center', fontsize=20, fontweight='bold')
             plt.draw()
             shuffle_maze(None)
             game_finished = True
         else:
+            direction_mapping = {
+                'right': (1, 0),
+                'left': (-1, 0),
+                'down': (0, 1),
+                'up': (0, -1)
+            }
             direction = direction_mapping.get(event.key)
             if direction:
                 dx, dy = direction
-                adventurer.move(dx, dy)
-                adventurer_plot.set_offsets([adventurer.x, adventurer.y])
-                plt.draw()
+                new_x = adventurer.x + dx
+                new_y = adventurer.y + dy
+
+                if 0 <= new_x < maze.shape[1] and 0 <= new_y < maze.shape[0]:
+                    if maze[new_y, new_x] != 0:
+                        # Check if the new position is reachable from the current position
+                        if verify_path(maze, (adventurer.x, adventurer.y), (new_x, new_y)):
+                            adventurer.move(dx, dy)
+                            adventurer_plot.set_offsets([adventurer.x, adventurer.y])
+                            plt.draw()
 
     def shuffle_maze(event):
         nonlocal maze, adventurer, adventurer_plot
@@ -117,7 +138,8 @@ def display_maze(maze):
         ax.scatter(start[1], start[0], color='blue', marker='s', s=100)
         ax.scatter(end[1], end[0], color='red', marker='s', s=100)
         adventurer = Adventurer(maze, start[1], start[0])  # Update adventurer with the new maze
-        adventurer_plot = ax.scatter(adventurer.x, adventurer.y, color=adventurer.color, marker=adventurer.marker, s=adventurer.size)
+        adventurer_plot = ax.scatter(adventurer.x, adventurer.y, color=adventurer.color, marker=adventurer.marker,
+                                     s=adventurer.size)
         ax.text(maze.shape[1] // 2, -0.8, 'Maze Project', ha='center', fontsize=20, fontweight='bold')
         plt.draw()
 
