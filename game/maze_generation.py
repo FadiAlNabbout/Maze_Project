@@ -5,6 +5,7 @@ import algorithms
 
 game_finished = False  # Global variable to track game status
 
+
 def generate_maze(width, height):
     maze = np.zeros((2 * height + 1, 2 * width + 1), dtype=int)
 
@@ -67,17 +68,18 @@ def display_maze(maze):
     cmap = plt.cm.get_cmap('Spectral')  # Colormap for colors
     cmap.set_under('black')  # Set the color for the maze
 
-    fig, ax = plt.subplots(figsize=(6, 6))
+    fig, ax = plt.subplots(figsize=(6, 6), facecolor='white')
     ax.imshow(maze, cmap=cmap, interpolation='nearest')
 
     # Add entry and exit points inside the maze
     start = np.argwhere(maze == 2)[0]
     end = np.argwhere(maze == 3)[0]
-    ax.scatter(start[0], start[1], color='blue', marker='s', s=100)
-    ax.scatter(end[0], end[1], color='red', marker='s', s=100)
+    ax.scatter(start[1], start[0], color='blue', marker='s', s=100)
+    ax.scatter(end[1], end[0], color='red', marker='s', s=100)
 
     adventurer = Adventurer(maze, start[1], start[0])
-    adventurer_plot = ax.scatter(adventurer.x, adventurer.y, color=adventurer.color, marker=adventurer.marker, s=adventurer.size)
+    adventurer_plot = ax.scatter(adventurer.x, adventurer.y, color=adventurer.color, marker=adventurer.marker,
+                                 s=adventurer.size)
 
     # Add header text with better placement
     ax.text(maze.shape[1] // 2, -0.8, 'Maze Project', ha='center', fontsize=20, fontweight='bold')
@@ -88,45 +90,60 @@ def display_maze(maze):
 
     def on_key(event):
         global game_finished  # Access the global variable
+        direction_mapping = {
+            'right': (1, 0),
+            'left': (-1, 0),
+            'down': (0, 1),
+            'up': (0, -1)
+        }
 
-        if event.key == 'a':
-            path = algorithms.a_star(maze)
-            if path:
-                path = path[1:]  # Exclude the starting position
-                for step in path:
-                    print(f"Move to {step}")
-                    adventurer.move(step[0] - adventurer.x, step[1] - adventurer.y)
-                    adventurer.follow_path()
-                    adventurer_plot.set_offsets([adventurer.x, adventurer.y])
-                    plt.draw()
-                    plt.pause(0.1)
-            else:
-                print("No valid path found.")
-        elif (adventurer.x, adventurer.y) == (end[1], end[0]):
-            ax.text(maze.shape[1] // 2, maze.shape[0] // 2, 'You WIN!', ha='center', fontsize=20, fontweight='bold')
-            plt.draw()
+        if (adventurer.x, adventurer.y) == (end[1], end[0]):
+            adventurer.move(0, 0)  # Stop the adventurer's movement
+            adventurer_plot.set_offsets([adventurer.x, adventurer.y])
+            print("Congratulations! You win!")
             shuffle_maze(None)
             game_finished = True
         else:
-            direction_mapping = {
-                'right': (1, 0),
-                'left': (-1, 0),
-                'down': (0, 1),
-                'up': (0, -1)
-            }
             direction = direction_mapping.get(event.key)
             if direction:
                 dx, dy = direction
-                new_x = adventurer.x + dx
-                new_y = adventurer.y + dy
+                adventurer.move(dx, dy)
+                adventurer_plot.set_offsets([adventurer.x, adventurer.y])
+                plt.draw()
 
-                if 0 <= new_x < maze.shape[1] and 0 <= new_y < maze.shape[0]:
-                    if maze[new_y, new_x] != 0:
-                        # Check if the new position is reachable from the current position
-                        if verify_path(maze, (adventurer.x, adventurer.y), (new_x, new_y)):
-                            adventurer.move(dx, dy)
-                            adventurer_plot.set_offsets([adventurer.x, adventurer.y])
-                            plt.draw()
+    def on_figure_key(event):
+        if event.key == 'a':
+            path = algorithms.a_star(maze)
+            if algorithms.verify_path_algorithm(path, maze):  # Exclude the starting position
+                for step in path:
+                    adventurer.move(step[0] - adventurer.x, step[1] - adventurer.y)
+                    adventurer.follow_path()
+                    adventurer_plot.set_offsets([adventurer.y, adventurer.x])
+                    plt.draw()
+                    plt.pause(0.1)
+        if event.key == 'b':
+            path = algorithms.bfs(maze)
+            if algorithms.verify_path_algorithm(path, maze):  # Exclude the starting position
+                for step in path:
+                    adventurer.move(step[0] - adventurer.x, step[1] - adventurer.y)
+                    adventurer.follow_path()
+                    adventurer_plot.set_offsets([adventurer.y, adventurer.x])
+                    plt.draw()
+                    plt.pause(0.1)
+        if event.key == 'd':
+            path = algorithms.dfs(maze)
+            if algorithms.verify_path_algorithm(path, maze):  # Exclude the starting position
+                for step in path:
+                    adventurer.move(step[0] - adventurer.x, step[1] - adventurer.y)
+                    adventurer.follow_path()
+                    adventurer_plot.set_offsets([adventurer.y, adventurer.x])
+                    plt.draw()
+                    plt.pause(0.1)
+        elif event.key == 's':
+            shuffle_maze(None)
+        elif event.key == 'q':
+            plt.close()
+
 
     def shuffle_maze(event):
         nonlocal maze, adventurer, adventurer_plot
@@ -143,9 +160,9 @@ def display_maze(maze):
         ax.text(maze.shape[1] // 2, -0.8, 'Maze Project', ha='center', fontsize=20, fontweight='bold')
         plt.draw()
 
+    fig.canvas.mpl_connect('key_press_event', on_key)
+    fig.canvas.mpl_connect('key_press_event', on_figure_key)
     button.on_clicked(shuffle_maze)
 
-    fig.canvas.mpl_connect('key_press_event', on_key)
-    plt.xticks([])
-    plt.yticks([])
     plt.show()
+

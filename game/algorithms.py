@@ -30,31 +30,6 @@ def a_star(maze):
                 f_score[neighbor] = g + heuristic(neighbor, end)
                 if neighbor not in visited:
                     queue.put(neighbor)
-    return None
-
-
-def bfs(maze):
-    start = find_start(maze)
-    end = find_end(maze)
-    queue = Queue()
-    queue.put(start)
-    visited = set()
-    parent = {}
-
-    while not queue.empty():
-        current = queue.get()
-
-        if current == end:
-            return reconstruct_path(parent, current)
-
-        visited.add(current)
-
-        neighbors = get_neighbors(current, maze)
-
-        for neighbor in neighbors:
-            if neighbor not in visited:
-                queue.put(neighbor)
-                parent[neighbor] = current
 
     return None
 
@@ -105,15 +80,42 @@ def find_end(maze):
 
 def get_neighbors(position, maze):
     x, y = position
+
     neighbors = []
     directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
 
     for dx, dy in directions:
         nx, ny = x + dx, y + dy
-        if 0 <= nx < maze.shape[1] and 0 <= ny < maze.shape[0] and maze[ny, nx] != 0:
+        if 0 <= nx < maze.shape[0] and 0 <= ny < maze.shape[1] and maze[nx, ny] != 0:
             neighbors.append((nx, ny))
 
     return neighbors
+
+
+def bfs(maze):
+    start = find_start(maze)
+    end = find_end(maze)
+    queue = Queue()
+    queue.put(start)
+    visited = set()
+    parent = {}
+
+    while not queue.empty():
+        current = queue.get()
+
+        if current == end:
+            return reconstruct_path(parent, current)
+
+        visited.add(current)
+
+        neighbors = get_neighbors(current, maze)
+
+        for neighbor in neighbors:
+            if neighbor not in visited:
+                queue.put(neighbor)
+                parent[neighbor] = current
+
+    return None
 
 
 def heuristic(current, end):
@@ -132,7 +134,7 @@ def reconstruct_path(parent, current):
     return path
 
 
-def verify_path(path, maze):
+def verify_path_algorithm(path, maze):
     # Check if the path is valid (from start to end)
     start = find_start(maze)
     end = find_end(maze)
@@ -144,5 +146,9 @@ def verify_path(path, maze):
         x2, y2 = path[i + 1]
         if abs(x1 - x2) + abs(y1 - y2) != 1:
             return False
+        if maze[x2, y2] == 0:  # Check if the path passes through a wall
+            return False
 
     return True
+
+

@@ -37,3 +37,19 @@ class Adventurer:
         self.y = start_y
         self.path = None
         self.path_index = 0
+
+    def get_positions(self):
+        return self.x, self.y
+        pass
+
+    def is_at_end(self, end):
+        if self.x == end[0] and self.y == end[1]:
+            return True
+        pass
+
+    def set_path(self, path):
+        self.path = path
+        pass
+    def move_along_path(self):
+        for i in range(1, len(self.path)):
+            self.move(self.path[i][0], self.path[i][1])
