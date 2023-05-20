@@ -1,7 +1,6 @@
 import timeit
 import numpy as np
 import sys
-sys.path.append('C:/Users/Personal/PycharmProjects/Maze/game/')
 
 from algorithms import a_star, bfs, dfs, ant_colony
 

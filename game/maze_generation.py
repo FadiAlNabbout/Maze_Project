@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from Adventurer import Adventurer
 
+game_finished = False  # Global variable to track game status
 
 def generate_maze(width, height):
     maze = np.zeros((2 * height + 1, 2 * width + 1), dtype=int)
@@ -64,7 +66,7 @@ def display_maze(maze):
     cmap = plt.cm.get_cmap('Spectral')  # Colormap for colors
     cmap.set_under('black')  # Set the color for the maze
 
-    fig, ax = plt.subplots(figsize=(10, 10))
+    fig, ax = plt.subplots(figsize=(6, 6))
     ax.imshow(maze, cmap=cmap, interpolation='nearest')
 
     # Add entry and exit points inside the maze
@@ -73,6 +75,9 @@ def display_maze(maze):
     ax.scatter(start[1], start[0], color='blue', marker='s', s=100)
     ax.scatter(end[1], end[0], color='red', marker='s', s=100)
 
+    adventurer = Adventurer(maze, start[1], start[0])
+    adventurer_plot = ax.scatter(adventurer.x, adventurer.y, color=adventurer.color, marker=adventurer.marker, s=adventurer.size)
+
     # Add header text with better placement
     ax.text(maze.shape[1] // 2, -0.8, 'Maze Project', ha='center', fontsize=20, fontweight='bold')
 
@@ -80,8 +85,30 @@ def display_maze(maze):
     ax_button = plt.axes([0.4, 0.03, 0.2, 0.05])
     button = plt.Button(ax_button, 'Shuffle', color='lightblue', hovercolor='skyblue')
 
+    def on_key(event):
+        global game_finished  # Access the global variable
+        direction_mapping = {
+            'right': (1, 0),
+            'left': (-1, 0),
+            'down': (0, 1),
+            'up': (0, -1)
+        }
+
+        if (adventurer.x, adventurer.y) == (end[1], end[0]):
+            ax.text(maze.shape[1] // 2, maze.shape[0] // 2, 'You WIN!', ha='center', fontsize=20, fontweight='bold')
+            plt.draw()
+            shuffle_maze(None)
+            game_finished = True
+        else:
+            direction = direction_mapping.get(event.key)
+            if direction:
+                dx, dy = direction
+                adventurer.move(dx, dy)
+                adventurer_plot.set_offsets([adventurer.x, adventurer.y])
+                plt.draw()
+
     def shuffle_maze(event):
-        nonlocal maze
+        nonlocal maze, adventurer, adventurer_plot
         maze = generate_maze((maze.shape[1] - 1) // 2, (maze.shape[0] - 1) // 2)
         ax.clear()
         ax.imshow(maze, cmap=cmap, interpolation='nearest')
@@ -89,11 +116,14 @@ def display_maze(maze):
         end = np.argwhere(maze == 3)[0]
         ax.scatter(start[1], start[0], color='blue', marker='s', s=100)
         ax.scatter(end[1], end[0], color='red', marker='s', s=100)
+        adventurer = Adventurer(maze, start[1], start[0])  # Update adventurer with the new maze
+        adventurer_plot = ax.scatter(adventurer.x, adventurer.y, color=adventurer.color, marker=adventurer.marker, s=adventurer.size)
         ax.text(maze.shape[1] // 2, -0.8, 'Maze Project', ha='center', fontsize=20, fontweight='bold')
         plt.draw()
 
     button.on_clicked(shuffle_maze)
 
+    fig.canvas.mpl_connect('key_press_event', on_key)
     plt.xticks([])
     plt.yticks([])
     plt.show()

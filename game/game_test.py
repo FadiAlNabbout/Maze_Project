@@ -1,9 +1,5 @@
 import tkinter as tk
 from tkinter import messagebox
-import sys
-sys.path.append('C:/Users/Personal/PycharmProjects/Maze/game/')
-from maze_generation import generate_maze, verify_path
-from algorithms import a_star, bfs, dfs
 from game import MazeGameApp
 
 class TestMazeGameApp(tk.Tk):
