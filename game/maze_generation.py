@@ -73,8 +73,8 @@ def display_maze(maze):
     # Add entry and exit points inside the maze
     start = np.argwhere(maze == 2)[0]
     end = np.argwhere(maze == 3)[0]
-    ax.scatter(start[1], start[0], color='blue', marker='s', s=100)
-    ax.scatter(end[1], end[0], color='red', marker='s', s=100)
+    ax.scatter(start[0], start[1], color='blue', marker='s', s=100)
+    ax.scatter(end[0], end[1], color='red', marker='s', s=100)
 
     adventurer = Adventurer(maze, start[1], start[0])
     adventurer_plot = ax.scatter(adventurer.x, adventurer.y, color=adventurer.color, marker=adventurer.marker, s=adventurer.size)

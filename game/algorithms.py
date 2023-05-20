@@ -128,6 +128,7 @@ def reconstruct_path(parent, current):
         current = parent[current]
         path.append(current)
     path.reverse()
+
     return path
 
 
