@@ -28,6 +28,14 @@ class StartGamePage(tk.Frame):
         self.height_entry = ttk.Entry(self)
         self.height_entry.pack()
 
+        self.algorithm_label = tk.Label(self, text="Algorithm:", font=("Arial", 12))
+        self.algorithm_label.pack()
+
+        self.algorithm_var = tk.StringVar(self)
+        self.algorithm_var.set("A*")
+
+        self.algorithm_menu = tk.OptionMenu(self, self.algorithm_var, "A*", "BFS", "DFS", "Ant Colony","Dijkstra","Manuel")
+        self.algorithm_menu.pack()
 
         start_button = ttk.Button(self, text="Start Game", command=self.start_game)
         start_button.pack(pady=(20, 10))
@@ -38,6 +46,8 @@ class StartGamePage(tk.Frame):
     def start_game(self):
         width = self.width_entry.get()
         height = self.height_entry.get()
+        algorithm = self.algorithm_var.get()
+
 
         if not width.isdigit() or not height.isdigit():
             messagebox.showerror("Input Error", "Width and height must be numeric values.")
@@ -45,7 +55,7 @@ class StartGamePage(tk.Frame):
         else:
             width = int(width)
             height = int(height)
-            self.start_game_callback(width, height)
+            self.start_game_callback(width, height, algorithm)
 
 
     def end_game(self):
@@ -53,20 +63,20 @@ class StartGamePage(tk.Frame):
         root.destroy()
 
 
-def start_game_callback(width, height):
+def start_game_callback(width, height, algorithm):
     start_page.width_entry.delete(0, tk.END)
     start_page.height_entry.delete(0, tk.END)
     print(f"Width: {width}")
     print(f"Height: {height}")
-    test_display_maze(width, height)
+    test_display_maze(width, height, algorithm)
 
-def test_display_maze(width, height):
+def test_display_maze(width, height, algorithm):
         # Generate a maze using your desired width and height
         width = width
         height = height
         maze = generate_maze(width, height)
         # Display the maze
-        display_maze(maze)
+        display_maze(maze, algorithm)
 
 
 

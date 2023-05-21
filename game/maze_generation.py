@@ -67,7 +67,7 @@ def verify_path(maze, start, end):
     return False
 
 
-def display_maze(maze):
+def display_maze(maze,algorithm):
     cmap = plt.cm.get_cmap('Greens_r')  # Colormap for colors
     cmap.set_under('black')  # Set the color for the maze
 
@@ -104,9 +104,6 @@ def display_maze(maze):
     def quit_game(event):
       plt.close()
 
-
-
-
     def on_key(event):
         global game_finished  # Access the global variable
         direction_mapping = {
@@ -130,48 +127,50 @@ def display_maze(maze):
                 adventurer_plot.set_offsets([adventurer.x, adventurer.y])
                 plt.draw()
 
-    def on_figure_key(event):
-        if event.key == 'a':
-            path = algorithms.a_star(maze)
-            if algorithms.verify_path_algorithm(path, maze):  # Exclude the starting position
-                for step in path:
-                    adventurer.move(step[0] - adventurer.x, step[1] - adventurer.y)
-                    adventurer.follow_path()
-                    adventurer_plot.set_offsets([adventurer.y, adventurer.x])
-                    plt.draw()
-                    plt.pause(0.1)
-        if event.key == 'b':
-            path = algorithms.bfs(maze)
-            if algorithms.verify_path_algorithm(path, maze):  # Exclude the starting position
-                for step in path:
-                    adventurer.move(step[0] - adventurer.x, step[1] - adventurer.y)
-                    adventurer.follow_path()
-                    adventurer_plot.set_offsets([adventurer.y, adventurer.x])
-                    plt.draw()
-                    plt.pause(0.1)
-        if event.key == 'd':
-            path = algorithms.dfs(maze)
-            if algorithms.verify_path_algorithm(path, maze):  # Exclude the starting position
-                for step in path:
-                    adventurer.move(step[0] - adventurer.x, step[1] - adventurer.y)
-                    adventurer.follow_path()
-                    adventurer_plot.set_offsets([adventurer.y, adventurer.x])
-                    plt.draw()
-                    plt.pause(0.1)
-        if event.key == 'k':
-            path = algorithms.dijkstra(maze)
-            if algorithms.verify_path_algorithm(path, maze):  # Exclude the starting position
-                for step in path:
-                    adventurer.move(step[0] - adventurer.x, step[1] - adventurer.y)
-                    adventurer.follow_path()
-                    adventurer_plot.set_offsets([adventurer.y, adventurer.x])
-                    plt.draw()
-                    plt.pause(0.1)
-        elif event.key == 's':
-            shuffle_maze(None)
-        elif event.key == 'q':
-            plt.close()
 
+    if algorithm == 'A*':
+        path = algorithms.a_star(maze)
+        print("A* path: ")
+        if algorithms.verify_path_algorithm(path, maze):  # Exclude the starting position
+            for step in path:
+                adventurer.move(step[0] - adventurer.x, step[1] - adventurer.y)
+                adventurer.follow_path()
+                adventurer_plot.set_offsets([adventurer.y, adventurer.x])
+                plt.draw()
+                plt.pause(0.1)
+    if algorithm == 'BFS':
+        path = algorithms.bfs(maze)
+        print("BFS path: ")
+        if algorithms.verify_path_algorithm(path, maze):  # Exclude the starting position
+            for step in path:
+                adventurer.move(step[0] - adventurer.x, step[1] - adventurer.y)
+                adventurer.follow_path()
+                adventurer_plot.set_offsets([adventurer.y, adventurer.x])
+                plt.draw()
+                plt.pause(0.1)
+    if algorithm == 'DFS':
+        path = algorithms.dfs(maze)
+        print("DFS path: ")
+        if algorithms.verify_path_algorithm(path, maze):  # Exclude the starting position
+            for step in path:
+                adventurer.move(step[0] - adventurer.x, step[1] - adventurer.y)
+                adventurer.follow_path()
+                adventurer_plot.set_offsets([adventurer.y, adventurer.x])
+                plt.draw()
+                plt.pause(0.1)
+    if algorithm == 'Dijkstra':
+        path = algorithms.dijkstra(maze)
+        print("Dijkstra path: ")
+        if algorithms.verify_path_algorithm(path, maze):  # Exclude the starting position
+            for step in path:
+                adventurer.move(step[0] - adventurer.x, step[1] - adventurer.y)
+                adventurer.follow_path()
+                adventurer_plot.set_offsets([adventurer.y, adventurer.x])
+                plt.draw()
+                plt.pause(0.1)
+
+        if algorithm=="manuel":
+            on_key(None)
 
     def shuffle_maze(event):
         nonlocal maze, adventurer, adventurer_plot
@@ -189,7 +188,6 @@ def display_maze(maze):
         plt.draw()
 
     fig.canvas.mpl_connect('key_press_event', on_key)
-    fig.canvas.mpl_connect('key_press_event', on_figure_key)
     button.on_clicked(shuffle_maze)
 
     quit.on_clicked(quit_game)
