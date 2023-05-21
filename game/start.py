@@ -45,8 +45,6 @@ class StartGamePage(tk.Frame):
         else:
             width = int(width)
             height = int(height)
-            start_page.destroy()
-            root.destroy()
             self.start_game_callback(width, height)
 
 
@@ -56,6 +54,8 @@ class StartGamePage(tk.Frame):
 
 
 def start_game_callback(width, height):
+    start_page.width_entry.delete(0, tk.END)
+    start_page.height_entry.delete(0, tk.END)
     print(f"Width: {width}")
     print(f"Height: {height}")
     test_display_maze(width, height)
@@ -69,8 +69,6 @@ def test_display_maze(width, height):
         display_maze(maze)
 
 
-        if __name__ == "__main__":
-            test_display_maze()
 
 
 root = tk.Tk()
