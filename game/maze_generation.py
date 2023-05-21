@@ -5,12 +5,24 @@ import algorithms
 
 game_finished = False  # Global variable to track game status
 
+import numpy as np
 
-def generate_maze(width, height):
+
+def generate_maze(width, height, num_solutions=1):
     maze = np.zeros((2 * height + 1, 2 * width + 1), dtype=int)
+    paths = []
+    start_x, start_y, end_x, end_y = 0, np.random.randint(1, height + 1) * 2, 2 * width, np.random.randint(1,
+                                                                                                           height + 1) * 2
 
-    def carve_path(x, y):
+    def carve_path(x, y, path):
+        nonlocal maze, paths
+
         maze[y, x] = 1
+        path.append((x, y))
+
+        if (x, y) == (end_x, end_y):
+            paths.append(path[:])
+            return
 
         directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
         np.random.shuffle(directions)
@@ -19,25 +31,16 @@ def generate_maze(width, height):
             next_x, next_y = x + 2 * dx, y + 2 * dy
             if 0 <= next_x < 2 * width + 1 and 0 <= next_y < 2 * height + 1 and maze[next_y, next_x] == 0:
                 maze[y + dy, x + dx] = 1
-                maze[y + dy // 2, x + dx // 2] = 1  # Carve the path by removing the wall
-                carve_path(next_x, next_y)
+                maze[y + dy // 2, x + dx // 2] = 1
+                carve_path(next_x, next_y, path)
 
-    # Generate random start and end points on the borders
-    start_x, start_y = 0, np.random.randint(1, height + 1) * 2
-    end_x, end_y = 2 * width, np.random.randint(1, height + 1) * 2
+    while len(paths) < num_solutions:
+        maze.fill(0)
+        paths.clear()
+        carve_path(start_x, start_y, [])
 
-    # Carve the path from start to end
-    carve_path(start_x, start_y)
-
-    # Ensure that the end point is reachable from the start point
-    while not verify_path(maze, (start_x, start_y), (end_x, end_y)):
-        maze = np.zeros((2 * height + 1, 2 * width + 1), dtype=int)
-        start_x, start_y = 0, np.random.randint(1, height + 1) * 2
-        end_x, end_y = 2 * width, np.random.randint(1, height + 1) * 2
-        carve_path(start_x, start_y)
-
-    maze[start_y, start_x] = 2  # Set the start point
-    maze[end_y, end_x] = 3  # Set the end point
+    maze[start_y, start_x] = 2
+    maze[end_y, end_x] = 3
 
     return maze
 
@@ -144,7 +147,6 @@ def display_maze(maze):
         elif event.key == 'q':
             plt.close()
 
-
     def shuffle_maze(event):
         nonlocal maze, adventurer, adventurer_plot
         maze = generate_maze((maze.shape[1] - 1) // 2, (maze.shape[0] - 1) // 2)
@@ -165,4 +167,3 @@ def display_maze(maze):
     button.on_clicked(shuffle_maze)
 
     plt.show()
-

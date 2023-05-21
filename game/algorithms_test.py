@@ -10,6 +10,7 @@ def generate_maze():
     maze[-1, -1] = 3  # End point
     return maze
 
+
 def test_algorithm_performance(algorithm):
     setup_code = '''
 from __main__ import generate_maze, {algorithm}
