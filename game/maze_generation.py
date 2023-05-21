@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import tkinter as tk
 from Adventurer import Adventurer
 import algorithms
 
@@ -68,7 +69,7 @@ def verify_path(maze, start, end):
 
 
 def display_maze(maze):
-    cmap = plt.cm.get_cmap('Spectral')  # Colormap for colors
+    cmap = plt.cm.get_cmap('Greens_r')  # Colormap for colors
     cmap.set_under('black')  # Set the color for the maze
 
     fig, ax = plt.subplots(figsize=(6, 6), facecolor='white')
@@ -88,8 +89,17 @@ def display_maze(maze):
     ax.text(maze.shape[1] // 2, -0.8, 'Maze Project', ha='center', fontsize=20, fontweight='bold')
 
     # Add shuffle button
-    ax_button = plt.axes([0.4, 0.03, 0.2, 0.05])
+    ax_button = plt.axes([0.12, 0.03, 0.2, 0.05])
     button = plt.Button(ax_button, 'Shuffle', color='lightblue', hovercolor='skyblue')
+
+    # Add quit button
+    ax_button = plt.axes([0.7, 0.03, 0.2, 0.05])
+    quit = plt.Button(ax_button, 'quit', color='red', hovercolor='green')
+
+
+
+    def quit_game(event):
+      plt.close()
 
     def on_key(event):
         global game_finished  # Access the global variable
@@ -147,6 +157,7 @@ def display_maze(maze):
         elif event.key == 'q':
             plt.close()
 
+
     def shuffle_maze(event):
         nonlocal maze, adventurer, adventurer_plot
         maze = generate_maze((maze.shape[1] - 1) // 2, (maze.shape[0] - 1) // 2)
@@ -165,5 +176,7 @@ def display_maze(maze):
     fig.canvas.mpl_connect('key_press_event', on_key)
     fig.canvas.mpl_connect('key_press_event', on_figure_key)
     button.on_clicked(shuffle_maze)
+
+    quit.on_clicked(quit_game)
 
     plt.show()

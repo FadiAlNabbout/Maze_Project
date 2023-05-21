@@ -3,8 +3,8 @@ from maze_generation import generate_maze, display_maze
 
 def test_display_maze():
     # Generate a maze using your desired width and height
-    width = 40
-    height = 40
+    width = 15
+    height = 15
     maze = generate_maze(width, height)
 
     # Display the maze
