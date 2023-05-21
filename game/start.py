@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-from maze_generation import generate_maze, display_maze
+from maze_generation import display_maze, generate_maze
 
 class StartGamePage(tk.Frame):
     def __init__(self, parent, start_game_callback):
@@ -45,7 +45,10 @@ class StartGamePage(tk.Frame):
         else:
             width = int(width)
             height = int(height)
+            start_page.destroy()
+            root.destroy()
             self.start_game_callback(width, height)
+
 
     def end_game(self):
         start_page.destroy()
@@ -62,7 +65,6 @@ def test_display_maze(width, height):
         width = width
         height = height
         maze = generate_maze(width, height)
-
         # Display the maze
         display_maze(maze)
 

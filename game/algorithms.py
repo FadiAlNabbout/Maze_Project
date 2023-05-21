@@ -1,5 +1,34 @@
 import numpy as np
 from queue import Queue
+import heapq
+
+def dijkstra(maze):
+    start = find_start(maze)
+    end = find_end(maze)
+    pq = [(0, start)]
+    visited = set()
+    distances = {start: 0}
+    parent = {}
+
+    while pq:
+        current_cost, current = heapq.heappop(pq)
+
+        if current == end:
+            return reconstruct_path(parent, current)
+
+        visited.add(current)
+
+        neighbors = get_neighbors(current, maze)
+
+        for neighbor in neighbors:
+            new_cost = distances[current] + 1  # Assuming all edges have a cost of 1
+
+            if neighbor not in distances or new_cost < distances[neighbor]:
+                distances[neighbor] = new_cost
+                heapq.heappush(pq, (new_cost, neighbor))
+                parent[neighbor] = current
+
+    return None
 
 
 def a_star(maze):
@@ -59,9 +88,6 @@ def dfs(maze):
     return None
 
 
-def ant_colony(maze):
-    # TODO: Implement Ant Colony Optimization algorithm for finding the shortest path
-    pass
 
 
 def find_start(maze):

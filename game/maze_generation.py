@@ -6,7 +6,6 @@ import algorithms
 
 game_finished = False  # Global variable to track game status
 
-import numpy as np
 
 
 def generate_maze(width, height, num_solutions=1):
@@ -86,7 +85,7 @@ def display_maze(maze):
                                  s=adventurer.size)
 
     # Add header text with better placement
-    ax.text(maze.shape[1] // 2, -0.8, 'Maze Project', ha='center', fontsize=20, fontweight='bold')
+    ax.text(maze.shape[1] // 2, -0.9, 'Maze Project', ha='center', fontsize=20, fontweight='bold')
 
     # Add shuffle button
     ax_button = plt.axes([0.12, 0.03, 0.2, 0.05])
@@ -96,10 +95,17 @@ def display_maze(maze):
     ax_button = plt.axes([0.7, 0.03, 0.2, 0.05])
     quit = plt.Button(ax_button, 'quit', color='red', hovercolor='green')
 
-
+    # Add text
+    ax.text(maze.shape[1] // 3, 33, 'a for A*', ha='center', fontsize=8)
+    ax.text(maze.shape[1] // 3, 34, 'b for bfs', ha='center', fontsize=8)
+    ax.text(maze.shape[1] // 2, 33, 'd for dfs', ha='center', fontsize=8)
+    ax.text(maze.shape[1] // 2, 34, 'k for dijkstra', ha='center', fontsize=8)
 
     def quit_game(event):
       plt.close()
+
+
+
 
     def on_key(event):
         global game_finished  # Access the global variable
@@ -152,6 +158,15 @@ def display_maze(maze):
                     adventurer_plot.set_offsets([adventurer.y, adventurer.x])
                     plt.draw()
                     plt.pause(0.1)
+        if event.key == 'k':
+            path = algorithms.dijkstra(maze)
+            if algorithms.verify_path_algorithm(path, maze):  # Exclude the starting position
+                for step in path:
+                    adventurer.move(step[0] - adventurer.x, step[1] - adventurer.y)
+                    adventurer.follow_path()
+                    adventurer_plot.set_offsets([adventurer.y, adventurer.x])
+                    plt.draw()
+                    plt.pause(0.1)
         elif event.key == 's':
             shuffle_maze(None)
         elif event.key == 'q':
@@ -180,3 +195,4 @@ def display_maze(maze):
     quit.on_clicked(quit_game)
 
     plt.show()
+
