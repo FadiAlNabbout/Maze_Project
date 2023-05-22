@@ -50,6 +50,7 @@ class Adventurer:
     def set_path(self, path):
         self.path = path
         pass
+
     def move_along_path(self):
         for i in range(1, len(self.path)):
             self.move(self.path[i][0], self.path[i][1])
