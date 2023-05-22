@@ -1,28 +1,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import tkinter as tk
 from Adventurer import Adventurer
 import algorithms
 
 game_finished = False  # Global variable to track game status
 
 
-
-def generate_maze(width, height, num_solutions=1):
+def generate_maze(width, height):
     maze = np.zeros((2 * height + 1, 2 * width + 1), dtype=int)
-    paths = []
-    start_x, start_y, end_x, end_y = 0, np.random.randint(1, height + 1) * 2, 2 * width, np.random.randint(1,
-                                                                                                           height + 1) * 2
 
-    def carve_path(x, y, path):
-        nonlocal maze, paths
-
+    def carve_path(x, y):
         maze[y, x] = 1
-        path.append((x, y))
-
-        if (x, y) == (end_x, end_y):
-            paths.append(path[:])
-            return
 
         directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
         np.random.shuffle(directions)
@@ -31,16 +19,53 @@ def generate_maze(width, height, num_solutions=1):
             next_x, next_y = x + 2 * dx, y + 2 * dy
             if 0 <= next_x < 2 * width + 1 and 0 <= next_y < 2 * height + 1 and maze[next_y, next_x] == 0:
                 maze[y + dy, x + dx] = 1
-                maze[y + dy // 2, x + dx // 2] = 1
-                carve_path(next_x, next_y, path)
+                maze[y + dy // 2, x + dx // 2] = 1  # Carve the path by removing the wall
+                carve_path(next_x, next_y)
 
-    while len(paths) < num_solutions:
-        maze.fill(0)
-        paths.clear()
-        carve_path(start_x, start_y, [])
+        # Add dead-ends
+        if np.random.rand() < 0.2:  # Adjust the probability as desired
+            add_dead_end(x, y)
 
-    maze[start_y, start_x] = 2
-    maze[end_y, end_x] = 3
+    def add_dead_end(x, y):
+        dead_end_directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+        np.random.shuffle(dead_end_directions)
+
+        for dx, dy in dead_end_directions:
+            dead_x, dead_y = x + 2 * dx, y + 2 * dy
+            if 0 <= dead_x < 2 * width + 1 and 0 <= dead_y < 2 * height + 1 and maze[dead_y, dead_x] == 0:
+                maze[y + dy, x + dx] = 1
+                maze[y + dy // 2, x + dx // 2] = 1  # Carve the dead-end path by removing the wall
+                break
+
+    def generate_paths(start_x, start_y):
+        maze[start_y, start_x] = 1
+        directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+        np.random.shuffle(directions)
+
+        for dx, dy in directions:
+            next_x, next_y = start_x + 2 * dx, start_y + 2 * dy
+            if 0 <= next_x < 2 * width + 1 and 0 <= next_y < 2 * height + 1 and maze[next_y, next_x] == 0:
+                maze[start_y + dy, start_x + dx] = 1
+                maze[start_y + dy // 2, start_x + dx // 2] = 1  # Carve the path by removing the wall
+                add_dead_end(start_x + dx, start_y + dy)
+                generate_paths(next_x, next_y)
+
+    # Generate random start and end points on the borders
+    start_x, start_y = 0, np.random.randint(1, height + 1) * 2
+    end_x, end_y = 2 * width, np.random.randint(1, height + 1) * 2
+
+    # Carve multiple paths from start to end
+    generate_paths(start_x, start_y)
+
+    # Ensure that the end point is reachable from the start point
+    while not verify_path(maze, (start_x, start_y), (end_x, end_y)):
+        maze = np.zeros((2 * height + 1, 2 * width + 1), dtype=int)
+        start_x, start_y = 0, np.random.randint(1, height + 1) * 2
+        end_x, end_y = 2 * width, np.random.randint(1, height + 1) * 2
+        generate_paths(start_x, start_y)
+
+    maze[start_y, start_x] = 2  # Set the start point
+    maze[end_y, end_x] = 3  # Set the end point
 
     return maze
 
@@ -67,7 +92,8 @@ def verify_path(maze, start, end):
     return False
 
 
-def display_maze(maze,algorithm):
+
+def display_maze(maze, algorithm):
     cmap = plt.cm.get_cmap('Greens_r')  # Colormap for colors
     cmap.set_under('black')  # Set the color for the maze
 
@@ -95,14 +121,8 @@ def display_maze(maze,algorithm):
     ax_button = plt.axes([0.7, 0.03, 0.2, 0.05])
     quit = plt.Button(ax_button, 'quit', color='red', hovercolor='green')
 
-    # Add text
-    ax.text(maze.shape[1] // 3, 33, 'a for A*', ha='center', fontsize=8)
-    ax.text(maze.shape[1] // 3, 34, 'b for bfs', ha='center', fontsize=8)
-    ax.text(maze.shape[1] // 2, 33, 'd for dfs', ha='center', fontsize=8)
-    ax.text(maze.shape[1] // 2, 34, 'k for dijkstra', ha='center', fontsize=8)
-
     def quit_game(event):
-      plt.close()
+        plt.close()
 
     def on_key(event):
         global game_finished  # Access the global variable
@@ -126,7 +146,6 @@ def display_maze(maze,algorithm):
                 adventurer.move(dx, dy)
                 adventurer_plot.set_offsets([adventurer.x, adventurer.y])
                 plt.draw()
-
 
     if algorithm == 'A*':
         path = algorithms.a_star(maze)
@@ -169,7 +188,7 @@ def display_maze(maze,algorithm):
                 plt.draw()
                 plt.pause(0.1)
 
-        if algorithm=="manuel":
+        if algorithm == "manuel":
             on_key(None)
 
     def shuffle_maze(event):
@@ -193,4 +212,3 @@ def display_maze(maze,algorithm):
     quit.on_clicked(quit_game)
 
     plt.show()
-

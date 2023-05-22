@@ -3,6 +3,7 @@ from tkinter import ttk
 from tkinter import messagebox
 from maze_generation import display_maze, generate_maze
 
+
 class StartGamePage(tk.Frame):
     def __init__(self, parent, start_game_callback):
         super().__init__(parent)
@@ -34,7 +35,8 @@ class StartGamePage(tk.Frame):
         self.algorithm_var = tk.StringVar(self)
         self.algorithm_var.set("A*")
 
-        self.algorithm_menu = tk.OptionMenu(self, self.algorithm_var, "A*", "BFS", "DFS", "Ant Colony","Dijkstra","Manuel")
+        self.algorithm_menu = tk.OptionMenu(self, self.algorithm_var, "A*", "BFS", "DFS", "Ant Colony", "Dijkstra",
+                                            "Manuel")
         self.algorithm_menu.pack()
 
         start_button = ttk.Button(self, text="Start Game", command=self.start_game)
@@ -48,7 +50,6 @@ class StartGamePage(tk.Frame):
         height = self.height_entry.get()
         algorithm = self.algorithm_var.get()
 
-
         if not width.isdigit() or not height.isdigit():
             messagebox.showerror("Input Error", "Width and height must be numeric values.")
 
@@ -56,7 +57,6 @@ class StartGamePage(tk.Frame):
             width = int(width)
             height = int(height)
             self.start_game_callback(width, height, algorithm)
-
 
     def end_game(self):
         start_page.destroy()
@@ -70,15 +70,14 @@ def start_game_callback(width, height, algorithm):
     print(f"Height: {height}")
     test_display_maze(width, height, algorithm)
 
+
 def test_display_maze(width, height, algorithm):
-        # Generate a maze using your desired width and height
-        width = width
-        height = height
-        maze = generate_maze(width, height)
-        # Display the maze
-        display_maze(maze, algorithm)
-
-
+    # Generate a maze using your desired width and height
+    width = width
+    height = height
+    maze = generate_maze(width, height)
+    # Display the maze
+    display_maze(maze, algorithm)
 
 
 root = tk.Tk()
@@ -95,4 +94,3 @@ root.update()
 root.geometry(f"{root.winfo_reqwidth()}x{root.winfo_reqheight()}")
 
 root.mainloop()
-

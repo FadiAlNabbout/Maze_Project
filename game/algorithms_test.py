@@ -2,12 +2,11 @@ import timeit
 import numpy as np
 import sys
 
+import maze_generation
 from algorithms import a_star, bfs, dfs, dijkstra
 
 def generate_maze():
-    maze = np.random.randint(2, size=(100, 100))
-    maze[0, 0] = 2  # Start point
-    maze[-1, -1] = 3  # End point
+    maze = maze_generation.generate_maze(15, 15)
     return maze
 
 
