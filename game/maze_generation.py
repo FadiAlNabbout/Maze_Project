@@ -23,7 +23,7 @@ def generate_maze(width, height):
                 carve_path(next_x, next_y)
 
         # Add dead-ends
-        if np.random.rand() < 0.2:  # Adjust the probability as desired
+        if np.random.rand() < 0.5:  # Adjust the probability as desired
             add_dead_end(x, y)
 
     def add_dead_end(x, y):
@@ -122,7 +122,11 @@ def display_maze(maze, algorithm):
     quit = plt.Button(ax_button, 'quit', color='red', hovercolor='green')
 
     def quit_game(event):
+        global game_finished
+        game_finished = True
         plt.close()
+
+
 
     def on_key(event):
         global game_finished  # Access the global variable
@@ -145,6 +149,7 @@ def display_maze(maze, algorithm):
                 dx, dy = direction
                 adventurer.move(dx, dy)
                 adventurer_plot.set_offsets([adventurer.x, adventurer.y])
+                quit.on_clicked(quit_game)
                 plt.draw()
 
     if algorithm == 'A*':
@@ -155,8 +160,9 @@ def display_maze(maze, algorithm):
                 adventurer.move(step[0] - adventurer.x, step[1] - adventurer.y)
                 adventurer.follow_path()
                 adventurer_plot.set_offsets([adventurer.y, adventurer.x])
+                quit.on_clicked(quit_game)
                 plt.draw()
-                plt.pause(0.1)
+                plt.pause(0.2)
     if algorithm == 'BFS':
         path = algorithms.bfs(maze)
         print("BFS path: ")
@@ -165,8 +171,9 @@ def display_maze(maze, algorithm):
                 adventurer.move(step[0] - adventurer.x, step[1] - adventurer.y)
                 adventurer.follow_path()
                 adventurer_plot.set_offsets([adventurer.y, adventurer.x])
+                quit.on_clicked(quit_game)
                 plt.draw()
-                plt.pause(0.1)
+                plt.pause(0.2)
     if algorithm == 'DFS':
         path = algorithms.dfs(maze)
         print("DFS path: ")
@@ -175,8 +182,9 @@ def display_maze(maze, algorithm):
                 adventurer.move(step[0] - adventurer.x, step[1] - adventurer.y)
                 adventurer.follow_path()
                 adventurer_plot.set_offsets([adventurer.y, adventurer.x])
+                quit.on_clicked(quit_game)
                 plt.draw()
-                plt.pause(0.1)
+                plt.pause(0.2)
     if algorithm == 'Dijkstra':
         path = algorithms.dijkstra(maze)
         print("Dijkstra path: ")
@@ -185,10 +193,11 @@ def display_maze(maze, algorithm):
                 adventurer.move(step[0] - adventurer.x, step[1] - adventurer.y)
                 adventurer.follow_path()
                 adventurer_plot.set_offsets([adventurer.y, adventurer.x])
+                quit.on_clicked(quit_game)
                 plt.draw()
-                plt.pause(0.1)
+                plt.pause(0.2)
 
-        if algorithm == "manuel":
+        if algorithm == "manual":
             on_key(None)
 
     def shuffle_maze(event):

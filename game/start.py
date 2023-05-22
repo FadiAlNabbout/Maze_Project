@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 from maze_generation import display_maze, generate_maze
+import sys
 
 
 class StartGamePage(tk.Frame):
@@ -33,10 +34,10 @@ class StartGamePage(tk.Frame):
         self.algorithm_label.pack()
 
         self.algorithm_var = tk.StringVar(self)
-        self.algorithm_var.set("A*")
+        self.algorithm_var.set("Manual")
 
-        self.algorithm_menu = tk.OptionMenu(self, self.algorithm_var, "A*", "BFS", "DFS", "Ant Colony", "Dijkstra",
-                                            "Manuel")
+        self.algorithm_menu = tk.OptionMenu(self, self.algorithm_var, "Manual", "A*", "BFS", "DFS", "Ant Colony",
+                                            "Dijkstra")
         self.algorithm_menu.pack()
 
         start_button = ttk.Button(self, text="Start Game", command=self.start_game)
@@ -52,6 +53,8 @@ class StartGamePage(tk.Frame):
 
         if not width.isdigit() or not height.isdigit():
             messagebox.showerror("Input Error", "Width and height must be numeric values.")
+        elif int(width) <= 0 or int(height) <= 0:
+            messagebox.showerror("Input Error", "Width and height must be positive values, greater then 0.")
 
         else:
             width = int(width)
@@ -61,6 +64,7 @@ class StartGamePage(tk.Frame):
     def end_game(self):
         start_page.destroy()
         root.destroy()
+        sys.exit()
 
 
 def start_game_callback(width, height, algorithm):
