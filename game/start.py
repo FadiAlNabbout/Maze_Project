@@ -79,7 +79,7 @@ def test_display_maze(width, height, algorithm):
     # Generate a maze using your desired width and height
     width = width
     height = height
-    maze = generate_maze(width, height)
+    maze = generate_maze(width, height,3)
     # Display the maze
     display_maze(maze, algorithm)
 
