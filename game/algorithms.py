@@ -2,7 +2,6 @@ import numpy as np
 from queue import Queue
 import heapq
 
-
 def dijkstra(maze):
     start = find_start(maze)
     end_positions = find_end(maze)
@@ -40,7 +39,7 @@ def a_star(maze):
     visited = set()
     parent = {}
     g_score = {start: 0}
-    f_score = {start: heuristic(start, end_positions)}
+    f_score = {start: heuristic(start, end_positions, maze)}
 
     while not queue.empty():
         current = queue.get()
@@ -57,7 +56,7 @@ def a_star(maze):
             if neighbor not in g_score or g < g_score[neighbor]:
                 parent[neighbor] = current
                 g_score[neighbor] = g
-                f_score[neighbor] = g + heuristic(neighbor, end_positions)
+                f_score[neighbor] = g + heuristic(neighbor, end_positions,maze)
                 if neighbor not in visited:
                     queue.put(neighbor)
 
@@ -143,16 +142,25 @@ def get_neighbors(position, maze):
     return neighbors
 
 
-def heuristic(current, end_positions):
+def heuristic(current, end_positions, maze):
     x1, y1 = current
     min_distance = float('inf')
 
     for position in end_positions:
         x2, y2 = position
         distance = abs(x1 - x2) + abs(y1 - y2)
+
+        # Consider terrain difficulty
+        if maze[x1, y1] == 4:  # Rough terrain
+            distance += 3
+        elif maze[x1, y1] == 5:  # Water terrain
+            distance += 4
+
         min_distance = min(min_distance, distance)
 
     return min_distance
+
+
 
 
 def reconstruct_path(parent, current):
