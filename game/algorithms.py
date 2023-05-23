@@ -2,9 +2,10 @@ import numpy as np
 from queue import Queue
 import heapq
 
+
 def dijkstra(maze):
     start = find_start(maze)
-    end = find_end(maze)
+    end_positions = find_end(maze)
     pq = [(0, start)]
     visited = set()
     distances = {start: 0}
@@ -13,7 +14,7 @@ def dijkstra(maze):
     while pq:
         current_cost, current = heapq.heappop(pq)
 
-        if current == end:
+        if current in end_positions:
             return reconstruct_path(parent, current)
 
         visited.add(current)
@@ -33,18 +34,18 @@ def dijkstra(maze):
 
 def a_star(maze):
     start = find_start(maze)
-    end = find_end(maze)
+    end_positions = find_end(maze)
     queue = Queue()
     queue.put(start)
     visited = set()
     parent = {}
     g_score = {start: 0}
-    f_score = {start: heuristic(start, end)}
+    f_score = {start: heuristic(start, end_positions)}
 
     while not queue.empty():
         current = queue.get()
 
-        if current == end:
+        if current in end_positions:
             return reconstruct_path(parent, current)
 
         visited.add(current)
@@ -56,16 +57,42 @@ def a_star(maze):
             if neighbor not in g_score or g < g_score[neighbor]:
                 parent[neighbor] = current
                 g_score[neighbor] = g
-                f_score[neighbor] = g + heuristic(neighbor, end)
+                f_score[neighbor] = g + heuristic(neighbor, end_positions)
                 if neighbor not in visited:
                     queue.put(neighbor)
 
     return None
 
 
+def bfs(maze):
+    start = find_start(maze)
+    end_positions = find_end(maze)
+    queue = Queue()
+    queue.put(start)
+    visited = set()
+    parent = {}
+
+    while not queue.empty():
+        current = queue.get()
+
+        if current in end_positions:
+            return reconstruct_path(parent, current)
+
+        visited.add(current)
+
+        neighbors = get_neighbors(current, maze)
+
+        for neighbor in neighbors:
+            if neighbor not in visited:
+                queue.put(neighbor)
+                parent[neighbor] = current
+
+    return None
+
+
 def dfs(maze):
     start = find_start(maze)
-    end = find_end(maze)
+    end_positions = find_end(maze)
     stack = [start]
     visited = set()
     parent = {}
@@ -73,7 +100,7 @@ def dfs(maze):
     while stack:
         current = stack.pop()
 
-        if current == end:
+        if current in end_positions:
             return reconstruct_path(parent, current)
 
         visited.add(current)
@@ -88,8 +115,6 @@ def dfs(maze):
     return None
 
 
-
-
 def find_start(maze):
     start_positions = np.argwhere(maze == 2)
     if len(start_positions) == 0:
@@ -100,8 +125,8 @@ def find_start(maze):
 def find_end(maze):
     end_positions = np.argwhere(maze == 3)
     if len(end_positions) == 0:
-        raise ValueError("End position not found in the maze.")
-    return tuple(end_positions[0])
+        raise ValueError("End positions not found in the maze.")
+    return [tuple(position) for position in end_positions]
 
 
 def get_neighbors(position, maze):
@@ -118,36 +143,16 @@ def get_neighbors(position, maze):
     return neighbors
 
 
-def bfs(maze):
-    start = find_start(maze)
-    end = find_end(maze)
-    queue = Queue()
-    queue.put(start)
-    visited = set()
-    parent = {}
-
-    while not queue.empty():
-        current = queue.get()
-
-        if current == end:
-            return reconstruct_path(parent, current)
-
-        visited.add(current)
-
-        neighbors = get_neighbors(current, maze)
-
-        for neighbor in neighbors:
-            if neighbor not in visited:
-                queue.put(neighbor)
-                parent[neighbor] = current
-
-    return None
-
-
-def heuristic(current, end):
+def heuristic(current, end_positions):
     x1, y1 = current
-    x2, y2 = end
-    return abs(x1 - x2) + abs(y1 - y2)
+    min_distance = float('inf')
+
+    for position in end_positions:
+        x2, y2 = position
+        distance = abs(x1 - x2) + abs(y1 - y2)
+        min_distance = min(min_distance, distance)
+
+    return min_distance
 
 
 def reconstruct_path(parent, current):
@@ -161,10 +166,10 @@ def reconstruct_path(parent, current):
 
 
 def verify_path_algorithm(path, maze):
-    # Check if the path is valid (from start to end)
+    # Check if the path is valid (from start to one of the end points)
     start = find_start(maze)
-    end = find_end(maze)
-    if path[0] != start or path[-1] != end:
+    end_positions = find_end(maze)
+    if path[0] != start or path[-1] not in end_positions:
         return False
 
     for i in range(len(path) - 1):
@@ -176,5 +181,3 @@ def verify_path_algorithm(path, maze):
             return False
 
     return True
-
-

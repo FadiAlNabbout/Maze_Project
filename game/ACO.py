@@ -150,7 +150,7 @@ class Colony:
         return best_ant
 
 
-maze = generate_maze(4, 4, 2)
+maze = generate_maze(3, 3)
 print(maze)
 colony = Colony(maze, np.random.RandomState(0), n=3, alpha=1.0, beta=2.0, rho=0.1)
 best_ant = colony.run(30)
