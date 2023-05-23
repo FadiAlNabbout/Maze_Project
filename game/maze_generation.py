@@ -7,8 +7,6 @@ import algorithms
 global game_finished  # Global variable to track game status
 game_finished = False
 
-import numpy as np
-import random
 
 def generate_maze(width, height):
     maze = np.zeros((2 * height + 1, 2 * width + 1), dtype=int)
@@ -42,33 +40,35 @@ def generate_maze(width, height):
     start_x, start_y = 0, random.randint(1, height) * 2
     start_point = (start_x, start_y)
 
-    # Generate end point on the upper wall of the maze
-    end_x, end_y = random.randint(1, width) * 2, 0
+    # Generate end point on the upper wall of the maze with varying distance
+    end_x, end_y = random.randint(1, width) * 2, random.randint(1, height // 2) * 2
     end_point_upper = (end_x, end_y)
 
-    # Generate end point on the outer wall of the maze
-    end_x, end_y = random.randint(1, width) * 2, height * 2
+    # Generate end point on the outer wall of the maze with varying distance
+    end_x, end_y = random.randint(1, width // 2) * 2, random.randint(1, height) * 2
     end_point_outer = (end_x, end_y)
 
-    # Generate end point of the right wall of the maze
-    end_x, end_y = 2 * width, random.randint(1, height) * 2
-    end_point_left = (end_x, end_y)
+    # Generate end point on the right wall of the maze with varying distance
+    end_x, end_y = 2 * width, random.randint(height // 2 + 1, height) * 2
+    end_point_right = (end_x, end_y)
 
     generate_paths(start_point[0], start_point[1], end_point_upper[0], end_point_upper[1])
     generate_paths(start_point[0], start_point[1], end_point_outer[0], end_point_outer[1])
-    generate_paths(start_point[0], start_point[1], end_point_left[0], end_point_left[1])
+    generate_paths(start_point[0], start_point[1], end_point_right[0], end_point_right[1])
 
-    # Ensure that both end points are reachable from the start point
-    while not verify_path(maze, start_point, end_point_upper) or not verify_path(maze, start_point, end_point_outer):
+    # Ensure that all end points are reachable from the start point
+    while not verify_path(maze, start_point, end_point_upper) or not verify_path(maze, start_point,
+                                                                                 end_point_outer) or not verify_path(
+            maze, start_point, end_point_right):
         maze = np.zeros((2 * height + 1, 2 * width + 1), dtype=int)
         generate_paths(start_point[0], start_point[1], end_point_upper[0], end_point_upper[1])
         generate_paths(start_point[0], start_point[1], end_point_outer[0], end_point_outer[1])
-        generate_paths(start_point[0], start_point[1], end_point_left[0], end_point_left[1])
+        generate_paths(start_point[0], start_point[1], end_point_right[0], end_point_right[1])
 
     maze[start_point[1], start_point[0]] = 2  # Set the start point
     maze[end_point_upper[1], end_point_upper[0]] = 3  # Set the upper exit point
     maze[end_point_outer[1], end_point_outer[0]] = 3  # Set the outer exit point
-    maze[end_point_left[1], end_point_left[0]] = 3  # Set the left exit point
+    maze[end_point_right[1], end_point_right[0]] = 3  # Set the right exit point
 
     return maze
 
@@ -93,6 +93,7 @@ def verify_path(maze, start, end):
                 stack.append((nx, ny))
 
     return False
+
 
 def quit():
     plt.close()
@@ -128,8 +129,6 @@ def display_maze(maze, algorithm):
         global game_finished
         game_finished = True
         plt.close()
-
-
 
     def on_key(event):
         global game_finished  # Access the global variable
@@ -203,8 +202,6 @@ def display_maze(maze, algorithm):
 
         if algorithm == "manual":
             on_key(None)
-
-
 
     fig.canvas.mpl_connect('key_press_event', on_key)
 
