@@ -125,11 +125,11 @@ def display_maze(maze, algorithm):
                                  s=adventurer.size)
 
     # Add header text with better placement
-    ax.text(maze.shape[1] // 2, -0.9, 'Maze Project', ha='center', fontsize=20, fontweight='bold')
+    ax.text(maze.shape[1] // 2, -0.9, 'Maze Game', ha='center', fontsize=20, fontweight='bold')
 
     # Add quit button
-    ax_button = plt.axes([0.4, 0.03, 0.2, 0.05])
-    quit = plt.Button(ax_button, 'quit', color='red', hovercolor='green')
+    ax_button = plt.axes([0.4, 0.03, 0.2, 0.06])
+    quit = plt.Button(ax_button, 'Quit', color='orange', hovercolor='red')
 
     def quit_game(event):
         global game_finished
