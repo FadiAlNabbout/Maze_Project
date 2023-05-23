@@ -181,4 +181,3 @@ def verify_path_algorithm(path, maze):
             return False
 
     return True
-

@@ -26,21 +26,6 @@ def generate_maze(width, height):
                 maze[y + dy // 2, x + dx // 2] = 1  # Carve the path by removing the wall
                 carve_path(next_x, next_y)
 
-        # Add dead-ends
-        if random.random() < 0.5:  # Adjust the probability as desired
-            add_dead_end(x, y)
-
-    def add_dead_end(x, y):
-        dead_end_directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
-        random.shuffle(dead_end_directions)
-
-        for dx, dy in dead_end_directions:
-            dead_x, dead_y = x + 2 * dx, y + 2 * dy
-            if 0 <= dead_x < 2 * width + 1 and 0 <= dead_y < 2 * height + 1 and maze[dead_y, dead_x] == 0:
-                maze[y + dy, x + dx] = 1
-                maze[y + dy // 2, x + dx // 2] = 1  # Carve the dead-end path by removing the wall
-                break
-
     def generate_paths(start_x, start_y, end_x, end_y):
         maze[start_y, start_x] = 1
         directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
@@ -51,7 +36,6 @@ def generate_maze(width, height):
             if 0 <= next_x < 2 * width + 1 and 0 <= next_y < 2 * height + 1 and maze[next_y, next_x] == 0:
                 maze[start_y + dy, start_x + dx] = 1
                 maze[start_y + dy // 2, start_x + dx // 2] = 1  # Carve the path by removing the wall
-                add_dead_end(start_x + dx, start_y + dy)
                 generate_paths(next_x, next_y, end_x, end_y)
 
     # Generate random start point on the left wall of the maze
@@ -227,4 +211,3 @@ def display_maze(maze, algorithm):
     quit.on_clicked(quit_game)
 
     plt.show()
-
