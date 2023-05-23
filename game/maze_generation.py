@@ -227,3 +227,4 @@ def display_maze(maze, algorithm):
     quit.on_clicked(quit_game)
 
     plt.show()
+

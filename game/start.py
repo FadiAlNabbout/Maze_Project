@@ -4,6 +4,12 @@ from tkinter import messagebox
 from maze_generation import display_maze, generate_maze, quit
 import sys
 
+global width_global
+width_global = 10
+global length_global
+length_global = 10
+global algorithm_global
+algorithm_global = 6
 
 class StartGamePage(tk.Frame):
     def __init__(self, parent, start_game_callback):
@@ -22,14 +28,12 @@ class StartGamePage(tk.Frame):
         width_label.pack()
 
         self.width_entry = ttk.Entry(self)
-        self.width_entry.insert(0, width_global)
         self.width_entry.pack()
 
         height_label = ttk.Label(self, text="Height:")
         height_label.pack()
 
         self.height_entry = ttk.Entry(self)
-        self.height_entry.insert(0, length_global)
         self.height_entry.pack()
 
         self.algorithm_label = tk.Label(self, text="Algorithm:", font=("Arial", 12))
