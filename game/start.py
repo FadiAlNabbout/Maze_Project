@@ -22,12 +22,14 @@ class StartGamePage(tk.Frame):
         width_label.pack()
 
         self.width_entry = ttk.Entry(self)
+        self.width_entry.insert(0, width_global)
         self.width_entry.pack()
 
         height_label = ttk.Label(self, text="Height:")
         height_label.pack()
 
         self.height_entry = ttk.Entry(self)
+        self.height_entry.insert(0, length_global)
         self.height_entry.pack()
 
         self.algorithm_label = tk.Label(self, text="Algorithm:", font=("Arial", 12))
