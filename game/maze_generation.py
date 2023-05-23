@@ -1,11 +1,14 @@
+import numpy as np
+import random
 import matplotlib.pyplot as plt
 from Adventurer import Adventurer
 import algorithms
+
+global game_finished  # Global variable to track game status
+game_finished = False
+
 import numpy as np
 import random
-
-game_finished = False  # Global variable to track game status
-
 
 def generate_maze(width, height):
     maze = np.zeros((2 * height + 1, 2 * width + 1), dtype=int)
@@ -107,6 +110,9 @@ def verify_path(maze, start, end):
 
     return False
 
+def quit():
+    plt.close()
+
 
 def display_maze(maze, algorithm):
     cmap = plt.cm.get_cmap('Greens_r')  # Colormap for colors
@@ -130,18 +136,16 @@ def display_maze(maze, algorithm):
     # Add header text with better placement
     ax.text(maze.shape[1] // 2, -0.9, 'Maze Project', ha='center', fontsize=20, fontweight='bold')
 
-    # Add shuffle button
-    ax_button = plt.axes([0.12, 0.03, 0.2, 0.05])
-    button = plt.Button(ax_button, 'Shuffle', color='lightblue', hovercolor='skyblue')
-
     # Add quit button
-    ax_button = plt.axes([0.7, 0.03, 0.2, 0.05])
+    ax_button = plt.axes([0.4, 0.03, 0.2, 0.05])
     quit = plt.Button(ax_button, 'quit', color='red', hovercolor='green')
 
     def quit_game(event):
         global game_finished
         game_finished = True
         plt.close()
+
+
 
     def on_key(event):
         global game_finished  # Access the global variable
@@ -216,33 +220,10 @@ def display_maze(maze, algorithm):
         if algorithm == "manual":
             on_key(None)
 
-    def shuffle_maze(event):
-        nonlocal maze, adventurer, adventurer_plot
-        global game_finished
-        game_finished = False  # Reset game status
-        maze = generate_maze((maze.shape[1] - 1) // 2, (maze.shape[0] - 1) // 2)
-        ax.clear()
-        ax.imshow(maze, cmap=cmap, interpolation='nearest')
-        start = np.argwhere(maze == 2)[0]
-        ends = np.argwhere(maze == 3)
-        ax.scatter(start[1], start[0], color='blue', marker='s', s=100)
-        for end_point in ends:
-            ax.scatter(end_point[1], end_point[0], color='red', marker='s', s=100)
-        adventurer = Adventurer(maze, start[1], start[0])  # Update adventurer with the new maze
-        adventurer_plot = ax.scatter(adventurer.x, adventurer.y, color=adventurer.color, marker=adventurer.marker,
-                                     s=adventurer.size)
-        ax.text(maze.shape[1] // 2, -0.8, 'Maze Project', ha='center', fontsize=20, fontweight='bold')
-        plt.draw()
 
-        fig.canvas.mpl_connect('key_press_event', on_key)  # Reconnect the key press event
 
     fig.canvas.mpl_connect('key_press_event', on_key)
-    button.on_clicked(shuffle_maze)
 
     quit.on_clicked(quit_game)
 
     plt.show()
-
-
-maze =generate_maze(10, 10)
-display_maze(maze, 'A*')

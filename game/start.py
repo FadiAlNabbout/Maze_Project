@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-from maze_generation import display_maze, generate_maze
+from maze_generation import display_maze, generate_maze, quit
 import sys
 
 
@@ -43,6 +43,9 @@ class StartGamePage(tk.Frame):
         start_button = ttk.Button(self, text="Start Game", command=self.start_game)
         start_button.pack(pady=(20, 10))
 
+        shuffle_button = ttk.Button(self, text="Shuffle Game", command=self.shuffle_game)
+        shuffle_button.pack(pady=(20, 10))
+
         quit_button = ttk.Button(self, text="Exit Game", command=self.end_game)
         quit_button.pack(pady=(30, 20))
 
@@ -66,12 +69,20 @@ class StartGamePage(tk.Frame):
         root.destroy()
         sys.exit()
 
+    def shuffle_game(self):
+        quit()
+        test_display_maze(width_global,length_global,algorithm_global)
+
 
 def start_game_callback(width, height, algorithm):
     start_page.width_entry.delete(0, tk.END)
     start_page.height_entry.delete(0, tk.END)
     print(f"Width: {width}")
     print(f"Height: {height}")
+    global width_global, length_global, algorithm_global
+    width_global = width
+    length_global = height
+    algorithm_global = algorithm
     test_display_maze(width, height, algorithm)
 
 
