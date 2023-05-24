@@ -63,9 +63,10 @@ def generate_maze(width, height):
         generate_paths(start_point[0], start_point[1], end_point_left[0], end_point_left[1])
 
     maze[start_point[1], start_point[0]] = 2  # Set the start point
-    maze[end_point_upper[1], end_point_upper[0]] = 3  # Set the upper exit point
-    maze[end_point_outer[1], end_point_outer[0]] = 3  # Set the outer exit point
-    maze[end_point_left[1], end_point_left[0]] = 3  # Set the left exit point
+    maze[end_point_upper[1], end_point_upper[0]] = 3.3  # Set the upper exit point
+    maze[end_point_outer[1], end_point_outer[0]] = 3.1  # Set the outer exit point
+    maze[end_point_left[1], end_point_left[0]] = 3.2    # Set the left exit point
+
 
     # Add rough terrain
     for y in range(1, 2 * height, 2):
@@ -119,8 +120,10 @@ def display_maze(maze, algorithm):
     ends = np.argwhere(maze == 3)
 
     ax.scatter(start[1], start[0], color='blue', marker='s', s=100)
-    for end_point in ends:
+    ax.text(start[1], start[0], "s", color='white', fontsize=12, ha='center', va='center')
+    for i, end_point in enumerate(ends):
         ax.scatter(end_point[1], end_point[0], color='red', marker='s', s=100)
+        ax.text(end_point[1], end_point[0], str(i + 1), color='black', fontsize=12, ha='center', va='center')
 
     # Add rough terrain in brown
     rough_terrain = np.argwhere(maze == 4)
