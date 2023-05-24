@@ -182,11 +182,18 @@ def display_maze(maze, algorithm):
                 dx, dy = direction
                 adventurer.move(dx, dy)
                 adventurer_plot.set_offsets([adventurer.x, adventurer.y])
+                ax.scatter(adventurer.x, adventurer.y, color=adventurer.color, marker=adventurer.marker,
+                           s=100)
                 plt.draw()
+
+    def trail():
+        ax.scatter(adventurer.y, adventurer.x, color=adventurer.color, marker=adventurer.marker,
+                   s=100)
 
     if algorithm == 'A*':
         path = algorithms.a_star(maze)
         print("A* path: ")
+        print(path)
         if algorithms.verify_path_algorithm(path, maze):  # Exclude the starting position
             for step in path:
                 adventurer.move(step[0] - adventurer.x, step[1] - adventurer.y)
@@ -194,6 +201,7 @@ def display_maze(maze, algorithm):
                 adventurer_plot.set_offsets([adventurer.y, adventurer.x])
                 quit.on_clicked(quit_game)
                 plt.draw()
+                trail()
                 plt.pause(0.2)
     if algorithm == 'BFS':
         path = algorithms.bfs(maze)
@@ -205,6 +213,7 @@ def display_maze(maze, algorithm):
                 adventurer_plot.set_offsets([adventurer.y, adventurer.x])
                 quit.on_clicked(quit_game)
                 plt.draw()
+                trail()
                 plt.pause(0.2)
     if algorithm == 'DFS':
         path = algorithms.dfs(maze)
@@ -216,6 +225,7 @@ def display_maze(maze, algorithm):
                 adventurer_plot.set_offsets([adventurer.y, adventurer.x])
                 quit.on_clicked(quit_game)
                 plt.draw()
+                trail()
                 plt.pause(0.2)
     if algorithm == 'Dijkstra':
         path = algorithms.dijkstra(maze)
@@ -227,6 +237,7 @@ def display_maze(maze, algorithm):
                 adventurer_plot.set_offsets([adventurer.y, adventurer.x])
                 quit.on_clicked(quit_game)
                 plt.draw()
+                trail()
                 plt.pause(0.2)
     if algorithm == 'UCS':
         path = algorithms.ucs(maze)
@@ -238,6 +249,7 @@ def display_maze(maze, algorithm):
                 adventurer_plot.set_offsets([adventurer.y, adventurer.x])
                 quit.on_clicked(quit_game)
                 plt.draw()
+                trail()
                 plt.pause(0.2)
     if algorithm == 'IDDFS':
         path = algorithms.iddfs(maze)
@@ -249,10 +261,13 @@ def display_maze(maze, algorithm):
                 adventurer_plot.set_offsets([adventurer.y, adventurer.x])
                 quit.on_clicked(quit_game)
                 plt.draw()
-                plt.pause(0.4)
+                trail()
+                plt.pause(0.2)
 
         if algorithm == "manual":
             on_key(None)
+
+
 
     fig.canvas.mpl_connect('key_press_event', on_key)
 
