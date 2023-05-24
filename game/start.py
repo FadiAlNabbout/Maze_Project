@@ -44,7 +44,7 @@ class StartGamePage(tk.Frame):
         self.algorithm_var = tk.StringVar(self)
         self.algorithm_var.set("Manual")
 
-        self.algorithm_menu = tk.OptionMenu(self, self.algorithm_var, "Manual", "A*", "BFS", "DFS", "Ant Colony",
+        self.algorithm_menu = tk.OptionMenu(self, self.algorithm_var, "Manual", "A*", "BFS", "DFS", "UCS",
                                             "Dijkstra")
         self.algorithm_menu.pack()
 

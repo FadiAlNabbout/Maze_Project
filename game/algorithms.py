@@ -1,7 +1,7 @@
 import numpy as np
 from queue import Queue
+from queue import PriorityQueue
 import heapq
-import ACO
 
 
 def dijkstra(maze):
@@ -58,16 +58,42 @@ def a_star(maze):
             if neighbor not in g_score or g < g_score[neighbor]:
                 parent[neighbor] = current
                 g_score[neighbor] = g
-                f_score[neighbor] = g + heuristic(neighbor, end_positions,maze)
+                f_score[neighbor] = g + heuristic(neighbor, end_positions, maze)
                 if neighbor not in visited:
                     queue.put(neighbor)
 
     return None
 
-def aco(maze):
-    aco = ACO.ACO(maze, num_ants=10, alpha=1, beta=2, evaporation_rate=0.5)
-    best_path = aco.solve(num_iterations=100)
-    return best_path
+
+def ucs(maze):
+    start = find_start(maze)
+    end_positions = find_end(maze)
+    priority_queue = PriorityQueue()
+    priority_queue.put((0, start))
+    visited = set()
+    distances = {start: 0}
+    parent = {}
+
+    while not priority_queue.empty():
+        current_cost, current = priority_queue.get()
+
+        if current in end_positions:
+            return reconstruct_path(parent, current)
+
+        visited.add(current)
+
+        neighbors = get_neighbors(current, maze)
+
+        for neighbor in neighbors:
+            new_cost = distances[current] + 1  # Assuming all edges have a cost of 1
+
+            if neighbor not in distances or new_cost < distances[neighbor]:
+                distances[neighbor] = new_cost
+                priority_queue.put((new_cost, neighbor))
+                parent[neighbor] = current
+
+    return None
+
 
 def bfs(maze):
     start = find_start(maze)
@@ -128,7 +154,7 @@ def find_start(maze):
 
 
 def find_end(maze):
-    end_positions=[]
+    end_positions = []
     end_position_1 = np.argwhere(maze == 3.1)
     end_position_2 = np.argwhere(maze == 3.2)
     end_position_3 = np.argwhere(maze == 3.3)
@@ -175,7 +201,6 @@ def heuristic(current, end_positions, maze):
     return min_distance
 
 
-
 def reconstruct_path(parent, current):
     path = [current]
     while current in parent:
@@ -202,6 +227,3 @@ def verify_path_algorithm(path, maze):
             return False
 
     return True
-
-
-

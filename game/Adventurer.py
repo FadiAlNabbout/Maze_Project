@@ -3,6 +3,7 @@ class Adventurer:
         self.maze = maze
         self.x = start_x
         self.y = start_y
+        self.num_steps = 0
         self.color = color
         self.marker = marker
         self.size = size
@@ -19,6 +20,7 @@ class Adventurer:
             if self.maze[new_y, new_x] != 0:
                 self.x = new_x
                 self.y = new_y
+                self.num_steps += 1
 
     def update_path(self, path):
         self.path = path
@@ -31,6 +33,7 @@ class Adventurer:
             dy = next_y - self.y
             self.move(dx, dy)
             self.path_index += 1
+
 
     def reset_position(self, start_x, start_y):
         self.x = start_x

@@ -148,8 +148,12 @@ def display_maze(maze, algorithm):
     ax.text(maze.shape[1] // 2, -0.9, 'Maze Project', ha='center', fontsize=20, fontweight='bold')
 
     # Add quit button
-    ax_button = plt.axes([0.4, 0.03, 0.2, 0.05])
+    ax_button = plt.axes([0.7, 0.03, 0.2, 0.05])
     quit = plt.Button(ax_button, 'quit', color='red', hovercolor='green')
+
+    # Add number steps
+    num_steps=adventurer.num_steps
+
 
     def quit_game(event):
         global game_finished
@@ -170,6 +174,9 @@ def display_maze(maze, algorithm):
             adventurer.move(0, 0)  # Stop the adventurer's movement
             game_finished = True
             print("You won!")
+            ax.text(maze.shape[1] // 2, maze.shape[0] + 1.5, 'Number of steps: ' + str(num_steps), ha='center',
+                    fontsize=12, fontweight='bold')
+
         else:
             direction = direction_mapping.get(event.key)
             if direction:
@@ -222,12 +229,25 @@ def display_maze(maze, algorithm):
                 quit.on_clicked(quit_game)
                 plt.draw()
                 plt.pause(0.2)
+    if algorithm == 'UCS':
+        path = algorithms.ucs(maze)
+        print("UCS path: ")
+        if algorithms.verify_path_algorithm(path, maze):  # Exclude the starting position
+            for step in path:
+                adventurer.move(step[0] - adventurer.x, step[1] - adventurer.y)
+                adventurer.follow_path()
+                adventurer_plot.set_offsets([adventurer.y, adventurer.x])
+                quit.on_clicked(quit_game)
+                plt.draw()
+                plt.pause(0.2)
 
         if algorithm == "manual":
             on_key(None)
+
 
     fig.canvas.mpl_connect('key_press_event', on_key)
 
     quit.on_clicked(quit_game)
 
     plt.show()
+
