@@ -1,8 +1,9 @@
 import numpy as np
 from queue import Queue
 import heapq
-from ACO import ACO
+from ACO import ACOAlgorithm as ACO
 from maze_generation import generate_maze
+
 
 def dijkstra(maze):
     start = find_start(maze)
@@ -58,16 +59,18 @@ def a_star(maze):
             if neighbor not in g_score or g < g_score[neighbor]:
                 parent[neighbor] = current
                 g_score[neighbor] = g
-                f_score[neighbor] = g + heuristic(neighbor, end_positions,maze)
+                f_score[neighbor] = g + heuristic(neighbor, end_positions, maze)
                 if neighbor not in visited:
                     queue.put(neighbor)
 
     return None
 
-def aco(maze):
-    aco = ACO.ACO(maze, num_ants=10, alpha=1, beta=2, evaporation_rate=0.5)
-    best_path = aco.solve(num_iterations=100)
+
+def ant_colony(maze):
+    Aco = ACO(maze, num_ants=1, num_iterations=3, alpha=1.0, beta=2.0, rho=0.1)
+    best_path = Aco.solve()
     return best_path
+
 
 def bfs(maze):
     start = find_start(maze)
