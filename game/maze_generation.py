@@ -5,14 +5,14 @@ import matplotlib.pyplot as plt
 from Adventurer import Adventurer
 import algorithms
 
-sys.setrecursionlimit(10**6)  # Increase the recursion limit
+sys.setrecursionlimit(10 ** 6)  # Increase the recursion limit
 
 global game_finished  # Global variable to track game status
 game_finished = False
 
 
 def generate_maze(width, height):
-    maze = np.zeros((2 * height + 1, 2 * width + 1), dtype=int)
+    maze = np.zeros((2 * height + 1, 2 * width + 1), dtype=float)
 
     def carve_path(x, y):
         maze[y, x] = 1
@@ -57,7 +57,7 @@ def generate_maze(width, height):
 
     # Ensure that both end points are reachable from the start point
     while not verify_path(maze, start_point, end_point_upper) or not verify_path(maze, start_point, end_point_outer):
-        maze = np.zeros((2 * height + 1, 2 * width + 1), dtype=int)
+        maze = np.zeros((2 * height + 1, 2 * width + 1), dtype=float)
         generate_paths(start_point[0], start_point[1], end_point_upper[0], end_point_upper[1])
         generate_paths(start_point[0], start_point[1], end_point_outer[0], end_point_outer[1])
         generate_paths(start_point[0], start_point[1], end_point_left[0], end_point_left[1])
@@ -65,8 +65,7 @@ def generate_maze(width, height):
     maze[start_point[1], start_point[0]] = 2  # Set the start point
     maze[end_point_upper[1], end_point_upper[0]] = 3.3  # Set the upper exit point
     maze[end_point_outer[1], end_point_outer[0]] = 3.1  # Set the outer exit point
-    maze[end_point_left[1], end_point_left[0]] = 3.2    # Set the left exit point
-
+    maze[end_point_left[1], end_point_left[0]] = 3.2  # Set the left exit point
 
     # Add rough terrain
     for y in range(1, 2 * height, 2):
@@ -117,7 +116,13 @@ def display_maze(maze, algorithm):
 
     # Add entry and exit points inside the maze
     start = np.argwhere(maze == 2)[0]
-    ends = np.argwhere(maze == 3)
+    ends = []
+    end_position_1 = np.argwhere(maze == 3.1)
+    end_position_2 = np.argwhere(maze == 3.2)
+    end_position_3 = np.argwhere(maze == 3.3)
+    ends.append(end_position_1[0])
+    ends.append(end_position_2[0])
+    ends.append(end_position_3[0])
 
     ax.scatter(start[1], start[0], color='blue', marker='s', s=100)
     ax.text(start[1], start[0], "s", color='white', fontsize=12, ha='center', va='center')
@@ -172,7 +177,6 @@ def display_maze(maze, algorithm):
                 adventurer.move(dx, dy)
                 adventurer_plot.set_offsets([adventurer.x, adventurer.y])
                 plt.draw()
-
 
     if algorithm == 'A*':
         path = algorithms.a_star(maze)

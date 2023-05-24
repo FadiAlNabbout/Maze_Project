@@ -128,7 +128,13 @@ def find_start(maze):
 
 
 def find_end(maze):
-    end_positions = np.argwhere(maze == 3)
+    end_positions=[]
+    end_position_1 = np.argwhere(maze == 3.1)
+    end_position_2 = np.argwhere(maze == 3.2)
+    end_position_3 = np.argwhere(maze == 3.3)
+    end_positions.append(end_position_1[0])
+    end_positions.append(end_position_2[0])
+    end_positions.append(end_position_3[0])
     if len(end_positions) == 0:
         raise ValueError("End positions not found in the maze.")
     return [tuple(position) for position in end_positions]
@@ -151,8 +157,9 @@ def get_neighbors(position, maze):
 def heuristic(current, end_positions, maze):
     x1, y1 = current
     min_distance = float('inf')
+    sorted_end_positions = sorted(end_positions, key=lambda pos: maze[pos[0], pos[1]])
 
-    for position in end_positions:
+    for position in sorted_end_positions:
         x2, y2 = position
         distance = abs(x1 - x2) + abs(y1 - y2)
 
@@ -166,6 +173,7 @@ def heuristic(current, end_positions, maze):
         min_distance = min(min_distance, distance)
 
     return min_distance
+
 
 
 def reconstruct_path(parent, current):
