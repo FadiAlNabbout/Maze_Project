@@ -45,7 +45,7 @@ class StartGamePage(tk.Frame):
         self.algorithm_var.set("Manual")
 
         self.algorithm_menu = tk.OptionMenu(self, self.algorithm_var, "Manual", "A*", "BFS", "DFS", "UCS",
-                                            "Dijkstra")
+                                            "Dijkstra","IDDFS")
         self.algorithm_menu.pack()
 
         start_button = ttk.Button(self, text="Start Game", command=self.start_game)

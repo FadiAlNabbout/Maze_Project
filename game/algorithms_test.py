@@ -3,10 +3,10 @@ import numpy as np
 import sys
 
 import maze_generation
-from algorithms import a_star, bfs, dfs, dijkstra, ucs
+from algorithms import a_star, bfs, dfs, dijkstra, ucs,iddfs
 
 def generate_maze():
-    maze = maze_generation.generate_maze(70, 70)
+    maze = maze_generation.generate_maze(40, 40)
     return maze
 
 
@@ -24,6 +24,6 @@ maze = generate_maze()
     print("{algorithm}: Execution time: {time:.6f} seconds".format(algorithm=algorithm, time=execution_time))
 
 if __name__ == "__main__":
-    algorithms = ['dijkstra', 'a_star', 'bfs', 'dfs','ucs']
+    algorithms = ['dijkstra', 'a_star', 'bfs', 'dfs','ucs','iddfs']
     for algorithm in algorithms:
         test_algorithm_performance(algorithm)

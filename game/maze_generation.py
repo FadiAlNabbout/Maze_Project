@@ -2,8 +2,8 @@ import numpy as np
 import sys
 import random
 import matplotlib.pyplot as plt
-from Adventurer import Adventurer
 import algorithms
+from Adventurer import Adventurer
 
 sys.setrecursionlimit(10 ** 6)  # Increase the recursion limit
 
@@ -152,8 +152,7 @@ def display_maze(maze, algorithm):
     quit = plt.Button(ax_button, 'quit', color='red', hovercolor='green')
 
     # Add number steps
-    num_steps=adventurer.num_steps
-
+    num_steps = adventurer.num_steps
 
     def quit_game(event):
         global game_finished
@@ -240,14 +239,23 @@ def display_maze(maze, algorithm):
                 quit.on_clicked(quit_game)
                 plt.draw()
                 plt.pause(0.2)
+    if algorithm == 'IDDFS':
+        path = algorithms.iddfs(maze)
+        print("IDDFS path: ")
+        if algorithms.verify_path_algorithm(path, maze):  # Exclude the starting position
+            for step in path:
+                adventurer.move(step[0] - adventurer.x, step[1] - adventurer.y)
+                adventurer.follow_path()
+                adventurer_plot.set_offsets([adventurer.y, adventurer.x])
+                quit.on_clicked(quit_game)
+                plt.draw()
+                plt.pause(0.4)
 
         if algorithm == "manual":
             on_key(None)
-
 
     fig.canvas.mpl_connect('key_press_event', on_key)
 
     quit.on_clicked(quit_game)
 
     plt.show()
-

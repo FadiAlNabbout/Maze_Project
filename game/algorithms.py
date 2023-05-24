@@ -3,6 +3,7 @@ from queue import Queue
 from queue import PriorityQueue
 import heapq
 
+
 def dijkstra(maze):
     start = find_start(maze)
     end_positions = find_end(maze)
@@ -65,6 +66,7 @@ def a_star(maze):
 
     return None
 
+
 def ucs(maze):
     start = find_start(maze)
     end_positions = find_end(maze)
@@ -95,6 +97,7 @@ def ucs(maze):
 
     return None
 
+
 def bfs(maze):
     start = find_start(maze)
     end_positions = find_end(maze)
@@ -114,6 +117,7 @@ def bfs(maze):
         neighbors = get_neighbors(current, maze)
 
         for neighbor in neighbors:
+            edge_cost = get_edge_cost(current, neighbor, maze)
             if neighbor not in visited:
                 queue.put(neighbor)
                 parent[neighbor] = current
@@ -139,9 +143,60 @@ def dfs(maze):
         neighbors = get_neighbors(current, maze)
 
         for neighbor in neighbors:
+            edge_cost = get_edge_cost(current, neighbor, maze)
             if neighbor not in visited:
                 stack.append(neighbor)
                 parent[neighbor] = current
+
+    return None
+
+
+def get_valid_neighbors(position, maze, visited):
+    x, y = position
+
+    neighbors = []
+    directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+
+    for dx, dy in directions:
+        nx, ny = x + dx, y + dy
+        if (
+                0 <= nx < maze.shape[0] and 0 <= ny < maze.shape[1] and maze[nx, ny] != 0
+                and (nx, ny) not in visited
+        ):
+            neighbors.append((nx, ny))
+
+    return neighbors
+
+
+def iddfs(maze):
+    start = find_start(maze)
+    end_positions = find_end(maze)
+    max_depth = maze.shape[0] * maze.shape[1]  # Maximum possible depth of the maze
+
+    for depth_limit in range(max_depth + 1):
+        visited = set()
+        path = dfs_recursive(start, end_positions, maze, depth_limit, visited)
+        if path is not None:
+            return path
+
+    return None
+
+
+def dfs_recursive(current, end_positions, maze, depth_limit, visited):
+    if current in end_positions:
+        return [current]
+
+    if depth_limit == 0:
+        return None
+
+    visited.add(current)
+
+    neighbors = get_valid_neighbors(current, maze, visited)
+
+    for neighbor in neighbors:
+        path = dfs_recursive(neighbor, end_positions, maze, depth_limit - 1, visited)
+        if path is not None:
+            return [current] + path
 
     return None
 
@@ -239,7 +294,3 @@ def verify_path_algorithm(path, maze):
             return False
 
     return True
-
-
-
-
