@@ -1,6 +1,8 @@
 import numpy as np
 from queue import Queue
 import heapq
+import ACO
+from maze_generation import generate_maze
 
 def dijkstra(maze):
     start = find_start(maze)
@@ -62,6 +64,10 @@ def a_star(maze):
 
     return None
 
+def aco(maze):
+    aco = ACO.ACO(maze, num_ants=10, alpha=1, beta=2, evaporation_rate=0.5)
+    best_path = aco.solve(num_iterations=100)
+    return best_path
 
 def bfs(maze):
     start = find_start(maze)
@@ -151,16 +157,15 @@ def heuristic(current, end_positions, maze):
         distance = abs(x1 - x2) + abs(y1 - y2)
 
         # Consider terrain difficulty
-        if maze[x1, y1] == 4:  # Rough terrain
+        terrain_type = maze[x1, y1]
+        if terrain_type == 4:  # Rough terrain
             distance += 3
-        elif maze[x1, y1] == 5:  # Water terrain
+        elif terrain_type == 5:  # Water terrain
             distance += 4
 
         min_distance = min(min_distance, distance)
 
     return min_distance
-
-
 
 
 def reconstruct_path(parent, current):
@@ -189,3 +194,6 @@ def verify_path_algorithm(path, maze):
             return False
 
     return True
+
+
+

@@ -1,14 +1,14 @@
 import numpy as np
+import sys
 import random
 import matplotlib.pyplot as plt
 from Adventurer import Adventurer
-import algorithms
+
+sys.setrecursionlimit(10**6)  # Increase the recursion limit
 
 global game_finished  # Global variable to track game status
 game_finished = False
 
-import numpy as np
-import random
 
 def generate_maze(width, height):
     maze = np.zeros((2 * height + 1, 2 * width + 1), dtype=int)
@@ -25,7 +25,6 @@ def generate_maze(width, height):
                 maze[y + dy, x + dx] = 1
                 maze[y + dy // 2, x + dx // 2] = 1  # Carve the path by removing the wall
                 carve_path(next_x, next_y)
-
 
     def generate_paths(start_x, start_y, end_x, end_y):
         maze[start_y, start_x] = 1
@@ -55,10 +54,6 @@ def generate_maze(width, height):
     end_x, end_y = 2 * width, random.randint(1, height) * 2
     end_point_left = (end_x, end_y)
 
-    generate_paths(start_point[0], start_point[1], end_point_upper[0], end_point_upper[1])
-    generate_paths(start_point[0], start_point[1], end_point_outer[0], end_point_outer[1])
-    generate_paths(start_point[0], start_point[1], end_point_left[0], end_point_left[1])
-
     # Ensure that both end points are reachable from the start point
     while not verify_path(maze, start_point, end_point_upper) or not verify_path(maze, start_point, end_point_outer):
         maze = np.zeros((2 * height + 1, 2 * width + 1), dtype=int)
@@ -74,13 +69,13 @@ def generate_maze(width, height):
     # Add rough terrain
     for y in range(1, 2 * height, 2):
         for x in range(1, 2 * width, 2):
-            if random.random() < 0.3:  # Adjust the probability as desired
+            if random.random() < 0.05:  # Adjust the probability as desired
                 maze[y, x] = 4  # Rough terrain
 
     # Add water
     for y in range(1, 2 * height, 2):
         for x in range(1, 2 * width, 2):
-            if random.random() < 0.2:  # Adjust the probability as desired
+            if random.random() < 0.05:  # Adjust the probability as desired
                 maze[y, x] = 5  # Water
     return maze
 
@@ -106,6 +101,7 @@ def verify_path(maze, start, end):
 
     return False
 
+
 def quit():
     plt.close()
 
@@ -121,23 +117,23 @@ def display_maze(maze, algorithm):
     start = np.argwhere(maze == 2)[0]
     ends = np.argwhere(maze == 3)
 
-    ax.scatter(start[1], start[0], color='blue', marker='s', s=100)
+    ax.scatter(start[1], start[0], color='blue', marker='s', s=maze.shape[0]/maze.shape[1])
     for end_point in ends:
-        ax.scatter(end_point[1], end_point[0], color='red', marker='s', s=100)
+        ax.scatter(end_point[1], end_point[0], color='red', marker='s', s=maze.shape[0]/maze.shape[1])
 
     # Add rough terrain in brown
     rough_terrain = np.argwhere(maze == 4)
     for terrain in rough_terrain:
-        ax.scatter(terrain[1], terrain[0], color='brown', marker='s', s=100)
+        ax.scatter(terrain[1], terrain[0], color='brown', marker='s', s=maze.shape[0]/maze.shape[1])
 
     # Add water terrain in sky blue
     water_terrain = np.argwhere(maze == 5)
     for terrain in water_terrain:
-        ax.scatter(terrain[1], terrain[0], color='skyblue', marker='s', s=100)
+        ax.scatter(terrain[1], terrain[0], color='skyblue', marker='s', s=maze.shape[0]/maze.shape[1])
 
     adventurer = Adventurer(maze, start[1], start[0])
     adventurer_plot = ax.scatter(adventurer.x, adventurer.y, color=adventurer.color, marker=adventurer.marker,
-                                 s=adventurer.size)
+                                 s=maze.shape[0]/maze.shape[1])
 
     # Add header text with better placement
     ax.text(maze.shape[1] // 2, -0.9, 'Maze Project', ha='center', fontsize=20, fontweight='bold')
@@ -150,8 +146,6 @@ def display_maze(maze, algorithm):
         global game_finished
         game_finished = True
         plt.close()
-
-
 
     def on_key(event):
         global game_finished  # Access the global variable
@@ -226,11 +220,8 @@ def display_maze(maze, algorithm):
         if algorithm == "manual":
             on_key(None)
 
-
-
     fig.canvas.mpl_connect('key_press_event', on_key)
 
     quit.on_clicked(quit_game)
 
     plt.show()
-

@@ -6,7 +6,7 @@ import maze_generation
 from algorithms import a_star, bfs, dfs, dijkstra
 
 def generate_maze():
-    maze = maze_generation.generate_maze(30, 30)
+    maze = maze_generation.generate_maze(100, 100)
     return maze
 
 
