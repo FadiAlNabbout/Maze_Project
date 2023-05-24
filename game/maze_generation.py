@@ -7,6 +7,7 @@ from Adventurer import Adventurer
 
 sys.setrecursionlimit(10 ** 6)  # Increase the recursion limit
 
+# Global variables
 global game_finished  # Global variable to track game status
 game_finished = False
 
@@ -124,25 +125,31 @@ def display_maze(maze, algorithm):
     ends.append(end_position_2[0])
     ends.append(end_position_3[0])
 
-    ax.scatter(start[1], start[0], color='blue', marker='s', s=100)
+    # Calculate the size of the elements based on the maze size
+    maze_height = maze.shape[0]  # Number of rows in the maze
+    maze_width = maze.shape[1]  # Number of columns in the maze
+    cell_size = min(6 / maze_width, 6 / maze_height)  # Calculate the size of a single cell
+
+    ax.scatter(start[1], start[0], color='blue', marker='s')
     ax.text(start[1], start[0], "s", color='white', fontsize=12, ha='center', va='center')
     for i, end_point in enumerate(ends):
-        ax.scatter(end_point[1], end_point[0], color='red', marker='s', s=100)
+        ax.scatter(end_point[1], end_point[0], color='red', marker='s')
         ax.text(end_point[1], end_point[0], str(i + 1), color='black', fontsize=12, ha='center', va='center')
 
     # Add rough terrain in brown
     rough_terrain = np.argwhere(maze == 4)
     for terrain in rough_terrain:
-        ax.scatter(terrain[1], terrain[0], color='brown', marker='s', s=100)
+        ax.scatter(terrain[1], terrain[0], color='brown', marker='s', s=200 * cell_size)
 
     # Add water terrain in sky blue
     water_terrain = np.argwhere(maze == 5)
     for terrain in water_terrain:
-        ax.scatter(terrain[1], terrain[0], color='skyblue', marker='s', s=100)
+        ax.scatter(terrain[1], terrain[0], color='skyblue', marker='s', s=200 * cell_size)
 
+    # Add adventurer
     adventurer = Adventurer(maze, start[1], start[0])
     adventurer_plot = ax.scatter(adventurer.x, adventurer.y, color=adventurer.color, marker=adventurer.marker,
-                                 s=100)
+                                 s=200 * cell_size)
 
     # Add header text with better placement
     ax.text(maze.shape[1] // 2, -0.9, 'Maze Project', ha='center', fontsize=20, fontweight='bold')
@@ -150,9 +157,6 @@ def display_maze(maze, algorithm):
     # Add quit button
     ax_button = plt.axes([0.7, 0.03, 0.2, 0.05])
     quit = plt.Button(ax_button, 'quit', color='red', hovercolor='green')
-
-    # Add number steps
-    num_steps = adventurer.num_steps
 
     def quit_game(event):
         global game_finished
@@ -172,9 +176,9 @@ def display_maze(maze, algorithm):
         if any((adventurer.x, adventurer.y) == (end[1], end[0]) for end in ends):
             adventurer.move(0, 0)  # Stop the adventurer's movement
             game_finished = True
-            print("You won!")
             ax.text(maze.shape[1] // 2, maze.shape[0] + 1.5, 'Number of steps: ' + str(num_steps), ha='center',
                     fontsize=12, fontweight='bold')
+            print("You won!")
 
         else:
             direction = direction_mapping.get(event.key)
@@ -183,12 +187,13 @@ def display_maze(maze, algorithm):
                 adventurer.move(dx, dy)
                 adventurer_plot.set_offsets([adventurer.x, adventurer.y])
                 ax.scatter(adventurer.x, adventurer.y, color=adventurer.color, marker=adventurer.marker,
-                           s=100)
+                           s=100 * cell_size)
                 plt.draw()
 
+    num_steps = 0
     def trail(step):
         ax.scatter(step[1], step[0], color=adventurer.color, marker=adventurer.marker,
-                   s=100)
+                   s=100 * cell_size)
 
     if algorithm == 'A*':
         path = algorithms.a_star(maze)
@@ -201,8 +206,11 @@ def display_maze(maze, algorithm):
                 adventurer_plot.set_offsets([adventurer.y, adventurer.x])
                 quit.on_clicked(quit_game)
                 plt.draw()
+                num_steps += 1
                 trail(step)
                 plt.pause(0.2)
+            ax.text(maze.shape[1] // 2, maze.shape[0] + 1.5,'Algorithm ' + algorithm + ' Number of steps: ' + str(num_steps), ha='center',
+                    fontsize=12, fontweight='bold')
     if algorithm == 'BFS':
         path = algorithms.bfs(maze)
         print("BFS path: ")
@@ -213,8 +221,12 @@ def display_maze(maze, algorithm):
                 adventurer_plot.set_offsets([adventurer.y, adventurer.x])
                 quit.on_clicked(quit_game)
                 plt.draw()
+                num_steps += 1
                 trail(step)
                 plt.pause(0.2)
+            ax.text(maze.shape[1] // 2, maze.shape[0] + 1.5,
+                    'Algorithm ' + algorithm + ' Number of steps: ' + str(num_steps), ha='center',
+                    fontsize=12, fontweight='bold')
     if algorithm == 'DFS':
         path = algorithms.dfs(maze)
         print("DFS path: ")
@@ -225,8 +237,12 @@ def display_maze(maze, algorithm):
                 adventurer_plot.set_offsets([adventurer.y, adventurer.x])
                 quit.on_clicked(quit_game)
                 plt.draw()
+                num_steps += 1
                 trail(step)
                 plt.pause(0.2)
+            ax.text(maze.shape[1] // 2, maze.shape[0] + 1.5,
+                    'Algorithm ' + algorithm + ' Number of steps: ' + str(num_steps), ha='center',
+                    fontsize=12, fontweight='bold')
     if algorithm == 'Dijkstra':
         path = algorithms.dijkstra(maze)
         print("Dijkstra path: ")
@@ -237,8 +253,12 @@ def display_maze(maze, algorithm):
                 adventurer_plot.set_offsets([adventurer.y, adventurer.x])
                 quit.on_clicked(quit_game)
                 plt.draw()
+                num_steps += 1
                 trail(step)
                 plt.pause(0.2)
+            ax.text(maze.shape[1] // 2, maze.shape[0] + 1.5,
+                    'Algorithm ' + algorithm + ' Number of steps: ' + str(num_steps), ha='center',
+                    fontsize=12, fontweight='bold')
     if algorithm == 'UCS':
         path = algorithms.ucs(maze)
         print("UCS path: ")
@@ -249,8 +269,12 @@ def display_maze(maze, algorithm):
                 adventurer_plot.set_offsets([adventurer.y, adventurer.x])
                 quit.on_clicked(quit_game)
                 plt.draw()
+                num_steps += 1
                 trail(step)
                 plt.pause(0.2)
+            ax.text(maze.shape[1] // 2, maze.shape[0] + 1.5,
+                    'Algorithm ' + algorithm + ' Number of steps: ' + str(num_steps), ha='center',
+                    fontsize=12, fontweight='bold')
     if algorithm == 'IDDFS':
         path = algorithms.iddfs(maze)
         print("IDDFS path: ")
@@ -261,13 +285,15 @@ def display_maze(maze, algorithm):
                 adventurer_plot.set_offsets([adventurer.y, adventurer.x])
                 quit.on_clicked(quit_game)
                 plt.draw()
+                num_steps += 1
                 trail(step)
                 plt.pause(0.2)
+                ax.text(maze.shape[1] // 2, maze.shape[0] + 1.5,
+                        'Algorithm ' + algorithm + ' Number of steps: ' + str(num_steps), ha='center',
+                        fontsize=12, fontweight='bold')
 
         if algorithm == "manual":
             on_key(None)
-
-
 
     fig.canvas.mpl_connect('key_press_event', on_key)
 

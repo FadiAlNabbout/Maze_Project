@@ -4,6 +4,7 @@ from queue import PriorityQueue
 import heapq
 
 
+
 def dijkstra(maze):
     start = find_start(maze)
     end_positions = find_end(maze)
@@ -294,3 +295,5 @@ def verify_path_algorithm(path, maze):
             return False
 
     return True
+
+
