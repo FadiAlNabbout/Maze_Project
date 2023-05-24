@@ -3,7 +3,6 @@ from queue import Queue
 from queue import PriorityQueue
 import heapq
 
-
 def dijkstra(maze):
     start = find_start(maze)
     end_positions = find_end(maze)
@@ -23,7 +22,8 @@ def dijkstra(maze):
         neighbors = get_neighbors(current, maze)
 
         for neighbor in neighbors:
-            new_cost = distances[current] + 1  # Assuming all edges have a cost of 1
+            edge_cost = get_edge_cost(current, neighbor, maze)
+            new_cost = distances[current] + edge_cost
 
             if neighbor not in distances or new_cost < distances[neighbor]:
                 distances[neighbor] = new_cost
@@ -36,15 +36,15 @@ def dijkstra(maze):
 def a_star(maze):
     start = find_start(maze)
     end_positions = find_end(maze)
-    queue = Queue()
-    queue.put(start)
+    queue = PriorityQueue()
+    queue.put((0, start))
     visited = set()
     parent = {}
     g_score = {start: 0}
     f_score = {start: heuristic(start, end_positions, maze)}
 
     while not queue.empty():
-        current = queue.get()
+        current_cost, current = queue.get()
 
         if current in end_positions:
             return reconstruct_path(parent, current)
@@ -54,16 +54,16 @@ def a_star(maze):
         neighbors = get_neighbors(current, maze)
 
         for neighbor in neighbors:
-            g = g_score[current] + 1
+            edge_cost = get_edge_cost(current, neighbor, maze)
+            g = g_score[current] + edge_cost
             if neighbor not in g_score or g < g_score[neighbor]:
                 parent[neighbor] = current
                 g_score[neighbor] = g
                 f_score[neighbor] = g + heuristic(neighbor, end_positions, maze)
                 if neighbor not in visited:
-                    queue.put(neighbor)
+                    queue.put((f_score[neighbor], neighbor))
 
     return None
-
 
 def ucs(maze):
     start = find_start(maze)
@@ -85,7 +85,8 @@ def ucs(maze):
         neighbors = get_neighbors(current, maze)
 
         for neighbor in neighbors:
-            new_cost = distances[current] + 1  # Assuming all edges have a cost of 1
+            edge_cost = get_edge_cost(current, neighbor, maze)
+            new_cost = distances[current] + edge_cost
 
             if neighbor not in distances or new_cost < distances[neighbor]:
                 distances[neighbor] = new_cost
@@ -93,7 +94,6 @@ def ucs(maze):
                 parent[neighbor] = current
 
     return None
-
 
 def bfs(maze):
     start = find_start(maze)
@@ -180,6 +180,18 @@ def get_neighbors(position, maze):
     return neighbors
 
 
+def get_edge_cost(position1, position2, maze):
+    terrain_type1 = maze[position1]
+    terrain_type2 = maze[position2]
+
+    if terrain_type1 == 4 or terrain_type2 == 4:  # Rough terrain
+        return 2
+    elif terrain_type1 == 5 or terrain_type2 == 5:  # Water terrain
+        return 3
+    else:
+        return 1
+
+
 def heuristic(current, end_positions, maze):
     x1, y1 = current
     min_distance = float('inf')
@@ -227,3 +239,7 @@ def verify_path_algorithm(path, maze):
             return False
 
     return True
+
+
+
+
