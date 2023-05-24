@@ -8,8 +8,6 @@ class Ant:
         self.path = []
         self.aco = aco
         self.current_position = self.get_start_position()
-        self.finished = False
-
     def get_start_position(self):
         start_positions = np.where(self.maze == 2)
         return tuple((start_positions[0][0], start_positions[1][0]))
@@ -32,8 +30,8 @@ class Ant:
         return possible_moves
 
     def move(self):
-        self.current_position = self.get_start_position()
-        while not self.finished:
+        self.path.append(self.current_position)  # Initialize the path with the starting position
+        while not self.maze[self.current_position[0]][self.current_position[1]] == 3:
             possible_moves = self.get_possible_moves(self.current_position)
 
             attractiveness_values = [
@@ -48,13 +46,7 @@ class Ant:
 
             self.current_position = chosen_move
             self.path.append(chosen_move)
-            self.finished = self.is_finished(chosen_move)
-
-    def is_finished(self, position):
-        if self.maze[position[0]][position[1]] == 3:
-            return True
-        return False
-
+            break
 
 
 class ACO:
@@ -97,12 +89,12 @@ class ACO:
             return 2
         elif terrain_type == 5:  # Water terrain
             return 0.1
+        elif terrain_type == 3:  # goal
+            return 100
         else:
-            return 1
+            return 0
 
     def solve(self, num_iterations):
-        start_position = np.where(self.maze == 2)
-        start_position = list(zip(start_position[0], start_position[1]))[0]
         ants = [Ant(self.maze, self) for _ in range(self.num_ants)]
 
         for _ in range(num_iterations):
@@ -124,7 +116,7 @@ class ACO:
 maze = generate_maze(4, 4)
 print(maze)
 
-aco = ACO(maze, num_ants=10, alpha=1, beta=2, evaporation_rate=0.5)
+aco = ACO(maze, num_ants=1, alpha=1, beta=2, evaporation_rate=0.5)
 best_path = aco.solve(num_iterations=10)
 
 print("Best Path:", best_path)

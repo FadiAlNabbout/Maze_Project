@@ -1,7 +1,7 @@
 import numpy as np
 from queue import Queue
 import heapq
-import ACO
+from ACO import ACO
 from maze_generation import generate_maze
 
 def dijkstra(maze):
@@ -194,6 +194,4 @@ def verify_path_algorithm(path, maze):
             return False
 
     return True
-
-
 
