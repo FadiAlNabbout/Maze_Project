@@ -1,6 +1,6 @@
 import random
 import numpy as np
-from maze_generation import generate_maze
+
 
 class Ant:
     def __init__(self, maze, aco):
@@ -110,12 +110,6 @@ class ACO:
         return len(path)
 
 
-maze = generate_maze(5, 5)
-print(maze)
 
-aco = ACO(maze, num_ants=10, alpha=1, beta=2, evaporation_rate=0.5)
-best_path = aco.solve(num_iterations=100)
 
-print("Best Path:", best_path)
-print("Best Path Length:", len(best_path))
 

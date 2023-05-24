@@ -2,7 +2,7 @@ import numpy as np
 from queue import Queue
 import heapq
 import ACO
-from maze_generation import generate_maze
+
 
 def dijkstra(maze):
     start = find_start(maze)

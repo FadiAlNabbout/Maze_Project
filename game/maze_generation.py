@@ -3,6 +3,7 @@ import sys
 import random
 import matplotlib.pyplot as plt
 from Adventurer import Adventurer
+import algorithms
 
 sys.setrecursionlimit(10**6)  # Increase the recursion limit
 
@@ -117,23 +118,23 @@ def display_maze(maze, algorithm):
     start = np.argwhere(maze == 2)[0]
     ends = np.argwhere(maze == 3)
 
-    ax.scatter(start[1], start[0], color='blue', marker='s', s=maze.shape[0]/maze.shape[1])
+    ax.scatter(start[1], start[0], color='blue', marker='s', s=100)
     for end_point in ends:
-        ax.scatter(end_point[1], end_point[0], color='red', marker='s', s=maze.shape[0]/maze.shape[1])
+        ax.scatter(end_point[1], end_point[0], color='red', marker='s', s=100)
 
     # Add rough terrain in brown
     rough_terrain = np.argwhere(maze == 4)
     for terrain in rough_terrain:
-        ax.scatter(terrain[1], terrain[0], color='brown', marker='s', s=maze.shape[0]/maze.shape[1])
+        ax.scatter(terrain[1], terrain[0], color='brown', marker='s', s=100)
 
     # Add water terrain in sky blue
     water_terrain = np.argwhere(maze == 5)
     for terrain in water_terrain:
-        ax.scatter(terrain[1], terrain[0], color='skyblue', marker='s', s=maze.shape[0]/maze.shape[1])
+        ax.scatter(terrain[1], terrain[0], color='skyblue', marker='s', s=100)
 
     adventurer = Adventurer(maze, start[1], start[0])
     adventurer_plot = ax.scatter(adventurer.x, adventurer.y, color=adventurer.color, marker=adventurer.marker,
-                                 s=maze.shape[0]/maze.shape[1])
+                                 s=100)
 
     # Add header text with better placement
     ax.text(maze.shape[1] // 2, -0.9, 'Maze Project', ha='center', fontsize=20, fontweight='bold')
@@ -156,21 +157,19 @@ def display_maze(maze, algorithm):
             'up': (0, -1)
         }
 
-        # Check if the game is already finished
-        if game_finished:
-            return
+        # Check if the adventurer has reached the end point
+        if any((adventurer.x, adventurer.y) == (end[1], end[0]) for end in ends):
+            adventurer.move(0, 0)  # Stop the adventurer's movement
+            game_finished = True
+            print("You won!")
+        else:
+            direction = direction_mapping.get(event.key)
+            if direction:
+                dx, dy = direction
+                adventurer.move(dx, dy)
+                adventurer_plot.set_offsets([adventurer.x, adventurer.y])
+                plt.draw()
 
-        direction = direction_mapping.get(event.key)
-        if direction:
-            dx, dy = direction
-            adventurer.move(dx, dy)
-            adventurer_plot.set_offsets([adventurer.x, adventurer.y])
-            plt.draw()
-
-            # Check if the adventurer has reached the end point
-            if any((adventurer.x, adventurer.y) == (end[1], end[0]) for end in ends):
-                game_finished = True
-                print("You won!")
 
     if algorithm == 'A*':
         path = algorithms.a_star(maze)
